@@ -59,6 +59,10 @@
 			<td><input ng-model="creature.maturationprogress" ng-change="selectmaturation()" percentage type="number" step="0.1" min="0" max="100">%</td>
 		</tr>
 		<tr>
+			<td style="width: 50%" class="label tooltip">Current Food:<span class="tooltiptext">The creature's current Food stat; food it already has in itself is credited to Food to Juvenile/Adult and the Baby Phase buffers</span></td>
+			<td><input ng-model="creature.currentfood" ng-change="selectweight()" type="number" min="0"> pt</td>
+		</tr>
+		<tr>
 			<td style="width: 50%" class="label tooltip">Elapsed Time:<span class="tooltiptext">Time elapsed since birth</span></td>
 			<td>{{creature.maturationtimecomplete | secondsToDateTime}}</td>
 		</tr>
