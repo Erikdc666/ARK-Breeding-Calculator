@@ -2348,7 +2348,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			birthtype: "Incubation",
 			type: "Carnivore",
 			basefoodrate: 0.001543,
-			babyfoodrate: 25.5,
+			babyfoodrate: 20.0,
 			extrababyfoodrate: 20.0,
 			agespeed: 0.000003,
 			agespeedmult: 4.4,
