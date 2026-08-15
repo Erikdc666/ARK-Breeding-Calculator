@@ -599,6 +599,19 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			weight: 100.0
 		},
 		
+		Astrocetus: { //
+			birthtype: "Gestation",
+			type: "Carnivore",
+			basefoodrate: 0.002314,
+			babyfoodrate: 25.5,
+			extrababyfoodrate: 20.0,
+			agespeed: 0.000003,
+			agespeedmult: 1.0,
+			gestationspeed: 0.000035,
+			gestationspeedmult: 1.0,
+			weight: 2000.0
+		},
+
 		Astrodelphis: { // NEW
 			birthtype: "Gestation",
 			type: "Carnivore",
