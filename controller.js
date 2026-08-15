@@ -472,7 +472,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		Amargasaurus: { //
 			birthtype: "Incubation",
 			type: "Herbivore",
-			basefoodrate: 0.003156,
+			basefoodrate: 0.00625,
 			babyfoodrate: 25.5,
 			extrababyfoodrate: 20,
 			agespeed: 0.000003,
