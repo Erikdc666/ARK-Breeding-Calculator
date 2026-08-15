@@ -1177,7 +1177,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeed: 0.000003,
 			agespeedmult: 2.0,
 			gestationspeed: 0.000035,
-			gestationspeedmult: 0.6,
+			gestationspeedmult: 1.0,
 			weight: 350.0
 		},
 
