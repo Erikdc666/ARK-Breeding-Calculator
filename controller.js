@@ -1327,7 +1327,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		
 		Gloon: { //
 			birthtype: "Incubation",
-			type: "Herbivore",
+			type: "Omnivore",
 			basefoodrate: 0.000868,
 			babyfoodrate: 25.5,
 			extrababyfoodrate: 20.0,
