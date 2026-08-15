@@ -453,7 +453,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1,
 			eggspeed: 0.005556,
 			eggspeedmult: 1,
-			weight: 650
+			weight: 600
 		},
 		
 		Allosaurus: { //
