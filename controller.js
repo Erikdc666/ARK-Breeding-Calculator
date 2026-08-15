@@ -2442,7 +2442,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			babyfoodrate: 25.5,
 			extrababyfoodrate: 20.0,
 			agespeed: 0.000003,
-			agespeedmult: 1.6,
+			agespeedmult: 2.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 2.0,
 			weight: 750.0
