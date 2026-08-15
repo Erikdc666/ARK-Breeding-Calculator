@@ -459,7 +459,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		Allosaurus: { //
 			birthtype: "Incubation",
 			type: "Carnivore",
-			basefoodrate: 0.001852,
+			basefoodrate: 0.002052,
 			babyfoodrate: 25.5,
 			extrababyfoodrate: 20,
 			agespeed: 0.000003,
