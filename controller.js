@@ -1469,15 +1469,15 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		},
 
 		Karkinos: { //
-			birthtype: "Incubation",
+			birthtype: "Gestation",
 			type: "Carrion", // Not 'Omnivore' like the dossier says.
 			basefoodrate: 0.003156,
 			babyfoodrate: 25.5,
 			extrababyfoodrate: 20.0,
 			agespeed: 0.000003,
 			agespeedmult: 0.8,
-			eggspeed: 0.005556,
-			eggspeedmult: 1.0,
+			gestationspeed: 0.000028,
+			gestationspeedmult: 1.0,
 			weight: 800.0
 		},
 
