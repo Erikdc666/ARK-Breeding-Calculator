@@ -1352,15 +1352,15 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		},
 		
 		Helicoprion: { //
-			birthtype: "Gestation",
+			birthtype: "Incubation",
 			type: "Carnivore",
 			basefoodrate: 0.001852,
 			babyfoodrate: 25.5,
 			extrababyfoodrate: 20.0,
 			agespeed: 0.000003,
 			agespeedmult: 0.9,
-			gestationspeed: 0.000035,
-			gestationspeedmult: 1,
+			eggspeed: 0.005556,
+			eggspeedmult: 1,
 			weight: 500
 		},
 		
