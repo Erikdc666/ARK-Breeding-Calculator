@@ -531,7 +531,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 100.0
+			weight: 150.0
 		},
 
 		Archaeopteryx: { //
