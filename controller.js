@@ -1244,7 +1244,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.8,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 380.0
+			weight: 550.0
 		},
 
 		Gallimimus: { //
