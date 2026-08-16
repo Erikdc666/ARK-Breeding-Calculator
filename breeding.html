@@ -20,6 +20,10 @@
 			<td><input ng-model="creature.finalweight" ng-change="selectweight()" type="number"></td>
 		</tr>
 		<tr>
+			<td style="width: 50%" class="label tooltip">Food:<span class="tooltiptext">Food stat of the creature as an adult. A baby's food capacity grows with maturation, so its current reserve is taken as this times the maturation %</span></td>
+			<td><input ng-model="creature.finalfood" ng-change="selectweight()" type="number"></td>
+		</tr>
+		<tr>
 			<td style="width: 50%" class="label tooltip">Food Type:<span class="tooltiptext">Type of food used in all food stats below</span></td>
 			<td><select ng-options="food for food in foodlists[creatures[creature.name].type]" ng-model="foodunit" ng-change="selectweight()"></select></td>
 		</tr>
@@ -72,11 +76,11 @@
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Food to Juvenile (E):<span class="tooltiptext">{{foodunit}} the creature will actually eat (i.e. no spoilage) between now and reaching juvenile</span></td>
-			<td>{{creature.tojuvfooditems | number:0}}</td>
+			<td>{{creature.tojuvfooditems | number:0}} <span ng-show="creature.currentfood>0">({{creature.tojuvfooditemsnet | number:0}} after reserve)</span></td>
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Food to Adult (E):<span class="tooltiptext">{{foodunit}} the creature will actually eat (i.e. no spoilage) between now and reaching adult</span></td>
-			<td>{{creature.toadultfooditems | number:0}}</td>
+			<td>{{creature.toadultfooditems | number:0}} <span ng-show="creature.currentfood>0">({{creature.toadultfooditemsnet | number:0}} after reserve)</span></td>
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Food Rate (E):<span class="tooltiptext">Food point the creature will currently eat every {{settings.foodrate_time_units}}</span></td>
@@ -94,6 +98,14 @@
 	<div class="tableheader slide" ng-class="{'dimmed': !tablevisibility['Baby']}" ng-click="showhidetable('Baby')">Baby Phase</div>
 	<div class="tableslide" ng-show="tablevisibility['Baby']">
 	<table>
+		<tr>
+			<td style="width: 50%" class="label tooltip">Food Reserve:<span class="tooltiptext">Food points the creature is carrying in its own Food stat right now, taken as the adult Food stat scaled by maturation</span></td>
+			<td>{{creature.currentfood | number:0}} pt</td>
+		</tr>
+		<tr>
+			<td style="width: 50%" class="label tooltip">Time Without Food:<span class="tooltiptext">How long the creature survives on its own Food stat alone, with nothing in its inventory and no trough in range</span></td>
+			<td>{{creature.foodreservetime | secondsToDateTime}}</td>
+		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Current Buffer:<span class="tooltiptext">How long the baby will last with a full inventory of {{foodunit}}</span></td>
 			<td>{{creature.currentbabybuffer | secondsToDateTime}}</td>
