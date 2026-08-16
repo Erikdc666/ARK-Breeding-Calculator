@@ -2620,6 +2620,116 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 	}
 
+	//Trough profiles - each one is a named creaturelist + troughstacks pair, so a main base
+	//and a water outpost can be kept side by side instead of overwriting each other.
+	//
+	//Storage is deliberately split. The profiles themselves go in localStorage, not cookies:
+	//a single setup with 40 creature rows already encodes to about 4KB, which is the whole
+	//per-cookie budget, so several of them simply do not fit. Which profile a tab is showing
+	//goes in sessionStorage, which is per-tab - that is what lets a second tab work on a
+	//different profile instead of inheriting this one's, while both still persist.
+	//
+	//Keys are namespaced by the first path segment so builds served side by side (e.g.
+	///breeding and /breedingPlus) do not share profiles - localStorage is per origin, not
+	//per path, unlike the cookies above.
+	var storagescope=(window.location.pathname.split('/')[1] || 'breeding');
+	var profileskey='troughprofiles:'+storagescope;
+	var activekey='troughprofile:'+storagescope;
+
+	function readstore(store, key) {
+		try {
+			var raw=window[store].getItem(key);
+			return raw ? JSON.parse(raw) : undefined;
+		} catch (e) {
+			return undefined; //Private mode, disabled storage, or corrupt JSON - fall back to defaults
+		}
+	}
+
+	function writestore(store, key, value) {
+		try {
+			window[store].setItem(key, JSON.stringify(value));
+		} catch (e) {
+			//Storage unavailable or full; the page still works, it just will not remember
+		}
+	}
+
+	$scope.saveprofiles=function() {
+		//troughupdatefoodtypes replaces the troughstacks object wholesale, so re-point the
+		//active profile at whatever the scope currently holds before writing.
+		if ($scope.activeprofile) {
+			$scope.activeprofile.creaturelist=$scope.creaturelist;
+			$scope.activeprofile.troughstacks=$scope.troughstacks;
+			writestore('localStorage', profileskey, $scope.troughprofiles);
+			writestore('sessionStorage', activekey, $scope.activeprofile.name);
+		}
+	}
+
+	$scope.troughprofiles=readstore('localStorage', profileskey);
+	if (!angular.isArray($scope.troughprofiles) || $scope.troughprofiles.length==0) {
+		//First run, or upgrading from the single-setup version: adopt whatever the old
+		//cookies held as the first profile rather than discarding it.
+		$scope.troughprofiles=[{
+			name: 'Default',
+			creaturelist: $scope.creaturelist,
+			troughstacks: $scope.troughstacks
+		}];
+	}
+
+	var wantedprofile=readstore('sessionStorage', activekey);
+	$scope.activeprofile=$scope.troughprofiles[0];
+	for (i=0; i<$scope.troughprofiles.length; i++) {
+		if ($scope.troughprofiles[i].name===wantedprofile) {
+			$scope.activeprofile=$scope.troughprofiles[i];
+		}
+	}
+	$scope.creaturelist=$scope.activeprofile.creaturelist || [];
+	$scope.troughstacks=$scope.activeprofile.troughstacks || $scope.troughstacks;
+
+	$scope.switchprofile=function() {
+		$scope.creaturelist=$scope.activeprofile.creaturelist || [];
+		$scope.troughstacks=$scope.activeprofile.troughstacks || {};
+		writestore('sessionStorage', activekey, $scope.activeprofile.name);
+		$scope.troughupdatefoodtypes();
+		$scope.troughcalc();
+	}
+
+	$scope.addprofile=function() {
+		var name=window.prompt('Name for the new trough profile:', 'Outpost');
+		if (!name) {
+			return;
+		}
+		var stacks={};
+		for (i=0; i<$scope.foodlist.length; i++) {
+			stacks[$scope.foodlist[i]]=0;
+		}
+		$scope.activeprofile={name: name, creaturelist: [], troughstacks: stacks};
+		$scope.troughprofiles.push($scope.activeprofile);
+		$scope.switchprofile();
+	}
+
+	$scope.renameprofile=function() {
+		var name=window.prompt('Rename this trough profile:', $scope.activeprofile.name);
+		if (!name) {
+			return;
+		}
+		$scope.activeprofile.name=name;
+		$scope.saveprofiles();
+	}
+
+	$scope.removeprofile=function() {
+		if ($scope.troughprofiles.length<2) {
+			return; //Always keep one, so there is somewhere to put creatures
+		}
+		if (!window.confirm('Delete the trough profile "'+$scope.activeprofile.name+'"?')) {
+			return;
+		}
+		$scope.troughprofiles.splice($scope.troughprofiles.indexOf($scope.activeprofile), 1);
+		$scope.activeprofile=$scope.troughprofiles[0];
+		writestore('localStorage', profileskey, $scope.troughprofiles);
+		$scope.switchprofile();
+	}
+
+
 	function validatenumber(number, min, max) {
 		if (isNaN(number)) {
 			return min;
@@ -3172,9 +3282,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 
 		var now=new Date();
-		$cookies.putObject('creaturelist', $scope.creaturelist, {expires: new Date(now.getFullYear(), now.getMonth()+6, now.getDate()), path: '/breeding'});
-		$cookies.putObject('troughdata', $scope.troughdata, {expires: new Date(now.getFullYear(), now.getMonth()+6, now.getDate()), path: '/breeding'});
-		$cookies.putObject('troughstacks', $scope.troughstacks, {expires: new Date(now.getFullYear(), now.getMonth()+6, now.getDate()), path: '/breeding'});
+		$scope.saveprofiles();
 
 		return output;
 	}
