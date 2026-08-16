@@ -453,7 +453,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1,
 			eggspeed: 0.005556,
 			eggspeedmult: 1,
-			weight: 650
+			weight: 650,
+			food: 3000
 		},
 		
 		Allosaurus: { //
@@ -466,7 +467,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 380.0
+			weight: 380.0,
+			food: 3000.0
 		},
 
 		Amargasaurus: { //
@@ -479,7 +481,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 475.0
+			weight: 475.0,
+			food: 6300.0
 		},
 
 		Andrewsarchus: { //
@@ -492,7 +495,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.6,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.6,
-			weight: 500.0
+			weight: 500.0,
+			food: 2174.0
 		},
 
 		Anglerfish: { //
@@ -505,7 +509,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 350
+			weight: 350,
+			food: 1500
 		},
 
 		Ankylosaurus: { //
@@ -518,7 +523,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.9,
-			weight: 250
+			weight: 250,
+			food: 3000
 		},
 		
 		Araneo: { //
@@ -531,7 +537,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 100.0
+			weight: 100.0,
+			food: 1200.0
 		},
 
 		Archaeopteryx: { //
@@ -544,7 +551,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 6.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.9,
-			weight: 30.0
+			weight: 30.0,
+			food: 900.0
 		},
 
 		Archelon: { //
@@ -557,7 +565,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 1000.0
+			weight: 1000.0,
+			food: 3500.0
 		},
 
 		Argentavis: { //
@@ -570,7 +579,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.7,
-			weight: 400.0
+			weight: 400.0,
+			food: 2000.0
 		},
 		
 		Armadoggo: { //
@@ -583,7 +593,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 200
+			weight: 200,
+			food: 1200
 		},
 
 		Arthropluera: { //
@@ -596,7 +607,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.8,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.0,
-			weight: 100.0
+			weight: 100.0,
+			food: 1200.0
 		},
 		
 		Astrodelphis: { // NEW
@@ -609,7 +621,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 280
+			weight: 280,
+			food: 1600
 		},
 
 		Aureliax: { //
@@ -622,7 +635,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 1100
+			weight: 1100,
+			food: 2000
 		},
 
 		Baryonyx: { //
@@ -635,7 +649,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.5,
-			weight: 325.0
+			weight: 325.0,
+			food: 2250.0
 		},
 
 		Basilosaurus: { //
@@ -648,7 +663,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.8,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 700.0
+			weight: 700.0,
+			food: 8000.0
 		},
 
 		Basilisk: { //
@@ -661,7 +677,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 0.8,
-			weight: 800.0
+			weight: 800.0,
+			food: 2500.0
 		},
 
 		Beelzebufo: { //
@@ -674,7 +691,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 160.0
+			weight: 160.0,
+			food: 1500.0
 		},
 		
 		Bison: { //
@@ -687,7 +705,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.2,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 2.2,
-			weight: 650
+			weight: 650,
+			food: 3250
 		},
 		
 		Bloodstalker: { //
@@ -700,7 +719,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.7,
-			weight: 350.0
+			weight: 350.0,
+			food: 1200.0
 		},
 
 		Brontosaurus: { //
@@ -713,7 +733,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 1600.0
+			weight: 1600.0,
+			food: 10000.0
 		},
 
 		Bulbdog: { //
@@ -726,7 +747,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 120
+			weight: 120,
+			food: 450
 		},
 
 		Burrowbuck: { //
@@ -739,7 +761,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.3,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.3,
-			weight: 350
+			weight: 350,
+			food: 2000
 		},
 		
 		Carbonemys: { //
@@ -752,7 +775,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 4.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 4.0,
-			weight: 270.0
+			weight: 270.0,
+			food: 3000.0
 		},
 
 		Carcharodontosaurus: { //
@@ -765,7 +789,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.3795,
 			eggspeed: 0.005556,
 			eggspeedmult: 0.1,
-			weight: 650
+			weight: 650,
+			food: 4000
 		},
 
 		Carnotaurus: { //
@@ -778,7 +803,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 300.0
+			weight: 300.0,
+			food: 2000.0
 		},
 
 		Castoroides: { //
@@ -791,7 +817,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.5,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 300
+			weight: 300,
+			food: 2000
 		},
 
 		Ceratosaurus: { //
@@ -817,7 +844,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 3.0,
-			weight: 60
+			weight: 60,
+			food: 450
 		},
 
 		Chalicotherium: { //
@@ -830,7 +858,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.125,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 400
+			weight: 400,
+			food: 4000
 		},
 
 		Compsognathus: { //
@@ -843,7 +872,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 4.4,
 			eggspeed: 0.005556,
 			eggspeedmult: 6.0,
-			weight: 25
+			weight: 25,
+			food: 450
 		},
 
 		Cosmo: { //
@@ -856,7 +886,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 70.0
+			weight: 70.0,
+			food: 450.0
 		},
 
 		Cryolophosaurus: { //
@@ -869,7 +900,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1,
-			weight: 500
+			weight: 500,
+			food: 1200
 		},
 		
 		"Crystal Wyvern": { //Food Check - Primal Crystal 350 Food Value - need more Tests!?
@@ -882,7 +914,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 300
+			weight: 300,
+			food: 1500,
 		},
 
 		Daeodon: { //
@@ -896,6 +929,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
 			weight: 400.0,
+			food: 2500,
 			foodmultipliers: {
 				"Raw Meat": 0.2
 			},
@@ -914,7 +948,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 140.0
+			weight: 140.0,
+			food: 1200.0
 		},
 
 		Deinosuchus: { //
@@ -927,7 +962,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.0,
-			weight: 600.0
+			weight: 600.0,
+			food: 3000.0
 		},
 
 		Deinotherium: { //
@@ -940,7 +976,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1,
-			weight: 800.0
+			weight: 800.0,
+			food: 8000.0
 		},
 
 		Desmodus: { //
@@ -953,7 +990,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.3,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1,
-			weight: 350.0
+			weight: 350.0,
+			food: 1600.0
 		},
 
 		Dilophosaurus: { //
@@ -966,7 +1004,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 4.4,
 			eggspeed: 0.005556,
 			eggspeedmult: 4.4,
-			weight: 45
+			weight: 45,
+			food: 450
 		},
 
 		Dimetrodon: { //
@@ -979,7 +1018,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2,
 			eggspeed: 0.005556,
 			eggspeedmult: 2,
-			weight: 250
+			weight: 250,
+			food: 1500
 		},
 
 		Dimorphodon: { //
@@ -992,7 +1032,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.7,
-			weight: 50
+			weight: 50,
+			food: 900
 		},
 
 		Dinopithecus: { //
@@ -1005,7 +1046,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 0.8,
-			weight: 350
+			weight: 350,
+			food: 1200
 		},
 		
 		Diplocaulus: { //
@@ -1018,7 +1060,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 4.1,
-			weight: 150.0
+			weight: 150.0,
+			food: 1500.0
 		},
 
 		Diplodocus: { //
@@ -1031,7 +1074,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 800.0
+			weight: 800.0,
+			food: 10000.0
 		},
 
 		Direbear: { //
@@ -1044,7 +1088,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 2,
-			weight: 650.0
+			weight: 650.0,
+			food: 3000.0
 		},
 
 		Direwolf: { //
@@ -1057,7 +1102,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 170.0
+			weight: 170.0,
+			food: 1200.0
 		},
 
 		Dodo: { //
@@ -1070,7 +1116,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 6.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 6.0,
-			weight: 50.0
+			weight: 50.0,
+			food: 450.0
 		},
 
 		Doedicurus: { //
@@ -1083,7 +1130,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.6,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.6,
-			weight: 250.0
+			weight: 250.0,
+			food: 3000.0
 		},
 
 		Drakeling: { //
@@ -1097,6 +1145,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			eggspeed: 0.005556,
 			eggspeedmult: 4.0,
 			weight: 65.0,
+			food: 1000,
 			foodmultipliers: {
 				"Raw Meat": 0.5,
 				"Cooked Meat": 2.0
@@ -1113,7 +1162,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.8,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 450.0
+			weight: 450.0,
+			food: 1750.0
 		},
 
 		Dreadnoughtus: { //
@@ -1126,7 +1176,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 3000.0
+			weight: 3000.0,
+			food: 13500,
+			food: 13500.0
 		},
 
 		Dunkleosteus: { //
@@ -1139,7 +1191,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.125,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 910.0
+			weight: 910.0,
+			food: 2000.0
 		},
 
 		ElderClaw: { //
@@ -1152,7 +1205,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1,
-			weight: 650
+			weight: 650,
+			food: 2800,
 		},
 		
 		Electrophorus: { //
@@ -1165,7 +1219,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 150.0
+			weight: 150.0,
+			food: 1500.0
 		},
 
 		Equus: { //
@@ -1178,7 +1233,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 0.6,
-			weight: 350.0
+			weight: 350.0,
+			food: 1500.0
 		},
 
 		Fasolasuchus: { //
@@ -1191,7 +1247,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 450.0
+			weight: 450.0,
+			food: 2750.0
 		},
 
 		Featherlight: { //
@@ -1204,7 +1261,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 70.0
+			weight: 70.0,
+			food: 450.0
 		},
 
 		Ferox: { //
@@ -1217,7 +1275,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 0.8,
-			weight: 55.0
+			weight: 55.0,
+			food: 1200.0
 		},
 
 		Fjordhawk: { //
@@ -1230,7 +1289,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 65.0
+			weight: 65.0,
+			food: 1000.0
 		},
 
  		// Unsure on this, because the gacha eats so many things.  This may be completely wrong.
@@ -1244,7 +1304,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.8,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 380.0
+			weight: 380.0,
+			food: 3000.0
 		},
 
 		Gallimimus: { //
@@ -1257,7 +1318,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 270
+			weight: 270,
+			food: 1000
 		},
 
 		Gasbag: { //
@@ -1270,7 +1332,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 3000.0
+			weight: 3000.0,
+			food: 3500.0
 		},
 
 		Gigadesmodus: { //
@@ -1283,7 +1346,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 1,
-			weight: 600
+			weight: 600,
+			food: 1500
 		},
 		
 		Giganotosaurus: { //
@@ -1296,7 +1360,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.3795,
 			eggspeed: 0.005556,
 			eggspeedmult: 0.1,
-			weight: 700
+			weight: 700,
+			food: 4000
 		},
 
 		Gigantopithecus: { //
@@ -1309,7 +1374,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.2,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.2,
-			weight: 220.0
+			weight: 220.0,
+			food: 1500.0
 		},
 
 		Gigantoraptor: { //
@@ -1322,7 +1388,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 320
+			weight: 320,
+			food: 3000
 		},
 		
 		Gloon: { //
@@ -1335,7 +1402,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 100
+			weight: 100,
+			food: 600
 		},
 		
 		Glowtail: { //
@@ -1348,7 +1416,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.0,
-			weight: 70.0
+			weight: 70.0,
+			food: 450.0
 		},
 		
 		Helicoprion: { //
@@ -1361,7 +1430,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1,
-			weight: 500
+			weight: 500,
+			food: 2000
 		},
 		
 		Hesperornis: { //
@@ -1374,7 +1444,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.3,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.3,
-			weight: 70.0
+			weight: 70.0,
+			food: 900.0
 		},
 		
 		Hyaenodon: { //
@@ -1387,7 +1458,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 2.0,
-			weight: 170.0
+			weight: 170.0,
+			food: 1200.0
 		},
 		
 		Ichthyornis: { //
@@ -1400,7 +1472,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 55.0
+			weight: 55.0,
+			food: 1000.0
 		},
 		
 		Ichthyosaurus: { //
@@ -1413,7 +1486,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.6,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 250.0
+			weight: 250.0,
+			food: 1000.0
 		},
 
 		Iguanodon: { //
@@ -1426,7 +1500,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 375.0
+			weight: 375.0,
+			food: 1800.0
 		},
 		
 		Jerboa: { //
@@ -1439,7 +1514,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 4.4,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 3.0,
-			weight: 120.0
+			weight: 120.0,
+			food: 450.0
 		},
 
 		Kairuku: { //
@@ -1452,7 +1528,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.3,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.3,
-			weight: 70
+			weight: 70,
+			food: 900
 		},
 		
 		Kaprosuchus: { //
@@ -1465,7 +1542,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.5,
-			weight: 140.0
+			weight: 140.0,
+			food: 1200.0
 		},
 
 		Karkinos: { //
@@ -1478,7 +1556,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.8,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 800.0
+			weight: 800.0,
+			food: 5000.0
 		},
 
 		Kentrosaurus: { //
@@ -1491,7 +1570,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.8,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.8,
-			weight: 500.0
+			weight: 500.0,
+			food: 6000.0
 		},
 		
 		Lymantria: { //
@@ -1504,7 +1584,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.3,
-			weight: 175
+			weight: 175,
+			food: 2000
 		},
 		
 		Lystrosaurus: { //
@@ -1517,7 +1598,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 6.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 6.0,
-			weight: 90.0
+			weight: 90.0,
+			food: 500.0
 		},
 		
 		Maewing: { // Maeguana Uses Maewing values
@@ -1530,7 +1612,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 400.0
+			weight: 400.0,
+			food: 2000.0
 		},
 
 		Malwyn: { //
@@ -1543,7 +1626,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 425
+			weight: 425,
+			food: 1200
 		},
 
 		Magmasaur: { //Food Check - Ambergris 500 Food Value - need more Tests!?
@@ -1556,7 +1640,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 550
+			weight: 550,
+			food: 2000
 		},
 
 		Mammoth: { //
@@ -1569,7 +1654,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.125,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 500
+			weight: 500,
+			food: 5000
 		},
 
 		Managarmr: { //
@@ -1582,7 +1668,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 2.0,
-			weight: 300.0
+			weight: 300.0,
+			food: 2000.0
 		},
 		
 		Manta: { //
@@ -1595,7 +1682,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 200.0
+			weight: 200.0,
+			food: 1000.0
 		},
 		
 		Mantis: { //
@@ -1608,7 +1696,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.8,
-			weight: 220
+			weight: 220,
+			food: 900
 		},
 		
 		Megachelon: { //
@@ -1621,7 +1710,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 2500.0
+			weight: 2500.0,
+			food: 8800.0
 		},
 
 		Megalania: { //
@@ -1634,7 +1724,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.5,
-			weight: 400.0
+			weight: 400.0,
+			food: 1500.0
 		},
 
 		Megaloceros: { //
@@ -1647,7 +1738,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.3,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.3,
-			weight: 220.0
+			weight: 220.0,
+			food: 1200.0
 		},
 
 		Megalodon: { //
@@ -1660,7 +1752,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 250.0
+			weight: 250.0,
+			food: 2000.0
 		},
 
 		Megalosaurus: { //
@@ -1673,7 +1766,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 300.0
+			weight: 300.0,
+			food: 2000.0
 		},
 
 		Megaraptor: { //
@@ -1686,7 +1780,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2,
 			eggspeed: 0.005556,
 			eggspeedmult: 3,
-			weight: 325
+			weight: 325,
+			food: 2250
 		},
 		
 		Megatherium: { //
@@ -1699,7 +1794,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 725.0
+			weight: 725.0,
+			food: 3000.0
 		},
 
 		Mesopithecus: { //
@@ -1712,7 +1808,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 3.0,
-			weight: 70.0
+			weight: 70.0,
+			food: 450.0
 		},
 
 		Microraptor: { //
@@ -1725,7 +1822,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 45.0
+			weight: 45.0,
+			food: 450.0
 		},
 
 		Morellatops: { //
@@ -1738,7 +1836,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.0,
-			weight: 440.0
+			weight: 440.0,
+			food: 6000.0
 		},
 
 		Mosasaurus: { //
@@ -1751,7 +1850,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 1300.0
+			weight: 1300.0,
+			food: 8000.0
 		},
 
 		Moschops: { //
@@ -1764,7 +1864,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.9,
-			weight: 200.0
+			weight: 200.0,
+			food: 300.0
 		},
 		
 		Onyc: { //
@@ -1777,7 +1878,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.3,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 2.0,
-			weight: 50.0
+			weight: 50.0,
+			food: 1500.0
 		},
 
 		Ossidon: { //
@@ -1790,7 +1892,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 500
+			weight: 500,
+			food: 3000
 		},
 
 		Otter: { //
@@ -1803,7 +1906,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 4.4,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 30.0
+			weight: 30.0,
+			food: 400.0
 		},
 
 		Oviraptor: { //
@@ -1816,7 +1920,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 4.4,
 			eggspeed: 0.005556,
 			eggspeedmult: 4.4,
-			weight: 100.0
+			weight: 100.0,
+			food: 900.0
 		},
 
 		Ovis: { //
@@ -1829,7 +1934,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 90
+			weight: 90,
+			food: 1200
 		},
 
 		Pachycephalosaurus: { //
@@ -1842,7 +1948,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 150.0
+			weight: 150.0,
+			food: 1200.0
 		},
 
 		Pachyrhinosaurus: { //
@@ -1855,7 +1962,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.0,
-			weight: 365.0
+			weight: 365.0,
+			food: 3000.0
 		},
 
 		Palaeoctopus: { //
@@ -1868,7 +1976,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1,
-			weight: 1000
+			weight: 1000,
+			food: 2500
 		},
 		
 		Paraceratherium: { //
@@ -1881,7 +1990,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 850.0
+			weight: 850.0,
+			food: 6500.0
 		},
 
 		Parasaurolophus: { //
@@ -1894,7 +2004,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.5,
-			weight: 480.0
+			weight: 480.0,
+			food: 1500.0
 		},
 
 		Parrot: { //
@@ -1907,7 +2018,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.7,
-			weight: 65
+			weight: 65,
+			food: 1000
 		},
 		
 		Pegomastax: { //
@@ -1920,7 +2032,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 4.4,
-			weight: 55.0
+			weight: 55.0,
+			food: 450.0
 		},
 
 		Pelagornis: { //
@@ -1933,7 +2046,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 150
+			weight: 150,
+			food: 1200
 		},
 
 		Phiomia: { //
@@ -1946,7 +2060,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 0.8,
-			weight: 200.0
+			weight: 200.0,
+			food: 3000.0
 		},
 
 		Plesiosaurus: { //
@@ -1959,7 +2074,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.8,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 800.0
+			weight: 800.0,
+			food: 5000.0
 		},
 
 		Procoptodon: { //
@@ -1972,7 +2088,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 2.0,
-			weight: 550.0
+			weight: 550.0,
+			food: 1500.0
 		},
 
 		Pteranodon: { //
@@ -1985,7 +2102,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 120.0
+			weight: 120.0,
+			food: 1200.0
 		},
 		
 		Pulmonoscorpius: { //
@@ -1998,7 +2116,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.5,
-			weight: 200.0
+			weight: 200.0,
+			food: 1500.0
 		},
 
 		Purlovia: { //
@@ -2011,7 +2130,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 400.0
+			weight: 400.0,
+			food: 4000.0
 		},
 
 		Pyromane: { // NEW
@@ -2025,6 +2145,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			gestationspeed: 0.000061,
 			gestationspeedmult: 1.9,
 			weight: 300.0,
+			food: 1000,
 			foodmultipliers: {
 				"Raw Meat": 0.5,
 				"Cooked Meat": 2.0
@@ -2041,7 +2162,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 0.3,
-			weight: 800
+			weight: 800,
+			food: 1200
 		},
 
 		Raptor: { //
@@ -2054,7 +2176,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.5,
-			weight: 140.0
+			weight: 140.0,
+			food: 1200.0
 		},
 
 		Ravager: { //
@@ -2067,7 +2190,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 500.0
+			weight: 500.0,
+			food: 1200.0
 		},
 
 		Reaper: { //
@@ -2081,7 +2205,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			// gestationspeed: 0.000035,
 			gestationspeed: 0.000028935,
 			gestationspeedmult: 0.8,
-			weight: 415.0
+			weight: 415.0,
+			food: 3000.0
 		},
 		
 		Rex: { //
@@ -2094,7 +2219,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 500
+			weight: 500,
+			food: 3000
 		},
 		
 		"Rock Drake": { //Food Check - Nameless Venom 400 Food Value - need more Tests!?
@@ -2107,7 +2233,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 0.8,
-			weight: 400.0
+			weight: 400.0,
+			food: 2000.0
 		},
 
 		"Roll Rat": { //
@@ -2120,7 +2247,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.6,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.6,
-			weight: 400.0
+			weight: 400.0,
+			food: 3000.0
 		},
 
 		Sabertooth: { //
@@ -2133,7 +2261,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 200.0
+			weight: 200.0,
+			food: 1200.0
 		},
 
 		Sarcosuchus: { //
@@ -2146,7 +2275,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.0,
-			weight: 300.0
+			weight: 300.0,
+			food: 1500.0
 		},
 
 		Shadowmane: { // NEW
@@ -2159,7 +2289,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000061,
 			gestationspeedmult: 1.9,
-			weight: 425.0
+			weight: 425.0,
+			food: 1500.0
 		},
 
 		Shastasaurus: { //
@@ -2172,7 +2303,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 3000.0
+			weight: 3000.0,
+			food: 8000.0
 		},	
 
 		Shinehorn: { //
@@ -2185,7 +2317,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 100.0
+			weight: 100.0,
+			food: 450.0
 		},
 
 		Shastasaurus: { //
@@ -2198,7 +2331,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 3000.0
+			weight: 3000.0,
+			food: 8000.0
 		},
 
 		Sinomacrops: { //
@@ -2211,7 +2345,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 6.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.9,
-			weight: 80.0
+			weight: 80.0,
+			food: 900.0
 		},
 
 		"Snow Owl": { //
@@ -2224,7 +2359,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.7,
-			weight: 375.0
+			weight: 375.0,
+			food: 2000.0
 		},
 
 		Solwyn: { //
@@ -2237,7 +2373,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
-			weight: 375
+			weight: 375,
+			food: 1200
 		},
 
 		Spinosaurus: { //
@@ -2250,7 +2387,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.3,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.3,
-			weight: 350.0
+			weight: 350.0,
+			food: 2600.0
 		},
 
 		Stegosaurus: { //
@@ -2263,7 +2401,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.8,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.8,
-			weight: 500.0
+			weight: 500.0,
+			food: 6000.0
 		},
 
 		Tapejara: { //
@@ -2276,7 +2415,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 280.0
+			weight: 280.0,
+			food: 1600.0
 		},
 
 		"Terror Bird": { //
@@ -2289,7 +2429,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.5,
-			weight: 120.0
+			weight: 120.0,
+			food: 1500.0
 		},
 
 		Therizinosaurus: { //
@@ -2302,7 +2443,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.8,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 365.0
+			weight: 365.0,
+			food: 3000.0
 		},
 
 		"Thorny Dragon": { //
@@ -2315,7 +2457,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.9,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.0,
-			weight: 300.0
+			weight: 300.0,
+			food: 1200.0
 		},
 
 		Thylacoleo: { //
@@ -2329,6 +2472,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.9,
 			weight: 400.0,
+			food: 1500,
 		},
 
 		Tidepup: { //Axolotl_Small
@@ -2341,7 +2485,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1,
-			weight: 150
+			weight: 150,
+			food: 3250
 		},
 		
 		Triceratops: { //
@@ -2354,7 +2499,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 2.0,
-			weight: 365.0
+			weight: 365.0,
+			food: 3000.0
 		},
 
 		Troodon: { //
@@ -2367,7 +2513,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 4.4,
 			eggspeed: 0.005556,
 			eggspeedmult: 4.4,
-			weight: 140.0
+			weight: 140.0,
+			food: 200.0
 		},
 		
 		Tropeognathus: { //
@@ -2380,7 +2527,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.0,
-			weight: 340.0
+			weight: 340.0,
+			food: 1600.0
 		},
 
 		Tusoteuthis: { //
@@ -2393,7 +2541,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 800.0
+			weight: 800.0,
+			food: 3200.0
 		},
 
 		Velonasaur: { //
@@ -2406,7 +2555,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 4.4,
-			weight: 325.0
+			weight: 325.0,
+			food: 2250.0
 		},
 
 		Veilwyn: { //
@@ -2419,7 +2569,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 1.0,
-			weight: 200
+			weight: 200,
+			food: 1200
 		},
 
 		Vulture: { //
@@ -2432,7 +2583,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 3.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 3.7,
-			weight: 50
+			weight: 50,
+			food: 900
 		},
 		
 		Voidwyrm: { //NEW Food Check - Mutagen 1000 Food Value - need more Tests!?
@@ -2445,7 +2597,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 400.0
+			weight: 400.0,
+			food: 1800.0
 		},
 
 		"Woolly Rhino": { //
@@ -2458,7 +2611,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.6,
 			gestationspeed: 0.000035,
 			gestationspeedmult: 2.0,
-			weight: 750.0
+			weight: 750.0,
+			food: 3000.0
 		},
 		
 		Wyvern: { //Food Check - Wyvern Milk 1200 Food Value - need more Tests!?
@@ -2471,7 +2625,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 400.0
+			weight: 400.0,
+			food: 1800.0
 		},
 
 		Xiphactinus: { //
@@ -2484,7 +2639,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 1.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 300.0
+			weight: 300.0,
+			food: 2000.0
 		},
 
 		"Yi Ling": { //
@@ -2497,7 +2653,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 2.0,
 			eggspeed: 0.005556,
 			eggspeedmult: 5.0,
-			weight: 140.0
+			weight: 140.0,
+			food: 1200.0
 		},
 
 		Yutyrannus: { //
@@ -2510,7 +2667,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-			weight: 500.0
+			weight: 500.0,
+			food: 3000.0
 		},
 		
 		Dreadnoughtus: { //
@@ -2523,7 +2681,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.5,
 			eggspeed: 0.000035,
 			eggspeedmult: 1.0,
-			weight: 3000.0
+			weight: 3000.0,
+			food: 13500
 		}
 
 	}
