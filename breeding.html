@@ -25,15 +25,15 @@
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label">Hatch Multiplier: </td>
-			<td><input ng-model="settings.hatchspeed" ng-change="selectsettings()" type="number" min="0"></td>
+			<td><input ng-model="settings.hatchspeed" ng-change="selectsettings()" ng-model-options="{debounce: 300}" type="number" min="0"></td>
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label">Mature Multiplier: </td>
-			<td><input ng-model="settings.maturationspeed" ng-change="selectsettings()" type="number" min="0"></td>
+			<td><input ng-model="settings.maturationspeed" ng-change="selectsettings()" ng-model-options="{debounce: 300}" type="number" min="0"></td>
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label">Consume Multiplier: </td>
-			<td><input ng-model="settings.consumptionspeed" ng-change="selectsettings()" type="number" min="0"></td>
+			<td><input ng-model="settings.consumptionspeed" ng-change="selectsettings()" ng-model-options="{debounce: 300}" type="number" min="0"></td>
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Gen2 Bulbdog Fetch:<span class="tooltiptext">Check this if you have the world effect of "Egg Hatching Increase" (hatch/gestate 50% faster)</span></td>
@@ -148,7 +148,7 @@
 		</tr>
 		<tr ng-repeat="(food, stacks) in troughstacks">
 			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in troughs</span></td>
-			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" type="number"> Stacks</td>
+			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks</td>
 		</tr>
 		<tr ng-repeat="(type, time) in troughdata.times">
 			<td style="width: 50%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>
@@ -175,8 +175,8 @@
 		</tr>
 		<tr ng-repeat="(index, troughcreature) in creaturelist">
 			<td><select ng-options="name as name for (name, details) in creatures" ng-model="troughcreature.name" ng-change="troughupdatefoodtypes();troughcalc()"></select></td>
-			<td><input ng-model="troughcreature.maturation" ng-change="troughcalc()" percentage type="number"></td>
-			<td><input ng-model="troughcreature.quantity" ng-change="troughcalc()" type="number"></td>
+			<td><input ng-model="troughcreature.maturation" ng-change="troughcalc()" ng-model-options="{debounce: 300}" percentage type="number"></td>
+			<td><input ng-model="troughcreature.quantity" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"></td>
 			<td><input type="button" ng-click="troughremovecreature(index)" value="Remove"></td>
 		</tr>
 	</table>
