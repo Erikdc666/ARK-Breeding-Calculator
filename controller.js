@@ -3244,7 +3244,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		//non-empty one, and when it next spoils. Stacks are pushed in foodorder, so each
 		//type owns one contiguous run - that is what lets the loops below skip whole
 		//regions instead of walking every stack on every tick.
-		stacktypes=[];
+		var stacktypes=[];
 		for (i=0; i<foodorder.length; i++) {
 			foodname=foodorder[i];
 			if (troughstacks[foodname]===undefined) {
@@ -3254,7 +3254,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			totalstacks[foodname]=Math.ceil(troughstacks[foodname]);
 			fullstacks=Math.floor(troughstacks[foodname]);
 			partialstack=(troughstacks[foodname]-fullstacks);
-			typefirst=stacks.length;
+			var typefirst=stacks.length;
 			for (j=0; j<troughstacks[foodname]; j++) {
 				stacks.push({
 					"type": foodname, //Name of this food
@@ -3313,7 +3313,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				//Which of the stack runs this creature can actually eat from, resolved once
 				//here instead of an indexOf against its food list per stack per tick.
 				newcreature.eats=[];
-				for (k=0; k<stacktypes.length; k++) {
+				for (var k=0; k<stacktypes.length; k++) {
 					if (newcreature.foods.indexOf(stacktypes[k].name)>-1) {
 						newcreature.eats.push(stacktypes[k]);
 					}
@@ -3341,7 +3341,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		time=0;
 		//Earliest tick on which any food type spoils. Until then the spoil pass has
 		//nothing to do and is skipped entirely.
-		nextspoil=Infinity;
+		var nextspoil=Infinity;
 		for (i=0;i<stacktypes.length;i++) {
 			if (stacktypes[i].next<nextspoil) nextspoil=stacktypes[i].next;
 		}
@@ -3350,27 +3350,27 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			time++;
 
 			for (i=0;i<troughcreatures.length;i++) {
-				creature=troughcreatures[i];
-				if (creature.foodrate<creature.minfoodrate) {
-					if (creature.hunger<0) {
-						creature.hunger=0;
+				var simcreature=troughcreatures[i];
+				if (simcreature.foodrate<simcreature.minfoodrate) {
+					if (simcreature.hunger<0) {
+						simcreature.hunger=0;
 						reserves--;
 					}
 					continue; //Creature is adult
 				}
 
-				creature.foodrate-=creature.foodratedecay;
+				simcreature.foodrate-=simcreature.foodratedecay;
 
-				if (creature.hunger<0) {
-					creature.hunger+=creature.foodrate;
-					if (creature.hunger>=0) {
+				if (simcreature.hunger<0) {
+					simcreature.hunger+=simcreature.foodrate;
+					if (simcreature.hunger>=0) {
 						reserves--;
 					}
 					continue; //Still living off its own Food stat, nothing taken from the trough
 				}
-				creature.hunger+=creature.foodrate;
+				simcreature.hunger+=simcreature.foodrate;
 
-				if (creature.hunger<20) {
+				if (simcreature.hunger<20) {
 					continue; //Creature cannot possibly eat below this
 				}
 
@@ -3378,8 +3378,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				//type in foodorder, so the first edible stack overall is the nearest of
 				//the per-type cursors - a few comparisons rather than a scan from 0.
 				currentstack=-1;
-				for (k=0;k<creature.eats.length;k++) {
-					stacktype=creature.eats[k];
+				for (var k=0;k<simcreature.eats.length;k++) {
+					var stacktype=simcreature.eats[k];
 					while (stacktype.cursor<=stacktype.last && stacks[stacktype.cursor]['stacksize']<=0) {
 						stacktype.cursor++; //Emptied stacks never refill, so this only moves forward
 					}
@@ -3389,15 +3389,15 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				}
 
 				if (currentstack>-1) {
-					foodmult=creature.foodmultipliers[stacks[currentstack]['type']];
-					wastemult=creature.wastemultipliers[stacks[currentstack]['type']];
-					if (stacks[currentstack]['food']*foodmult<creature.hunger) {
-						times[$scope.creatures[creature.name].type]=time;
+					foodmult=simcreature.foodmultipliers[stacks[currentstack]['type']];
+					wastemult=simcreature.wastemultipliers[stacks[currentstack]['type']];
+					if (stacks[currentstack]['food']*foodmult<simcreature.hunger) {
+						times[$scope.creatures[simcreature.name].type]=time;
 						stacks[currentstack]['stacksize']--;
 						eatenfood++;
 						eatenpoints+=stacks[currentstack]['food']*foodmult;
 						wastedpoints+=stacks[currentstack]['waste']*wastemult;
-						creature.hunger-=stacks[currentstack]['food']*foodmult;
+						simcreature.hunger-=stacks[currentstack]['food']*foodmult;
 						if (stacks[currentstack]['stacksize']==0) {
 							totalstacks['all']--;
 							totalstacks[stacks[currentstack]['type']]--;
@@ -3410,8 +3410,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			//and then only walks the run of stacks belonging to that food type.
 			if (time>=nextspoil) {
 				nextspoil=Infinity;
-				for (k=0;k<stacktypes.length;k++) {
-					stacktype=stacktypes[k];
+				for (var k=0;k<stacktypes.length;k++) {
+					var stacktype=stacktypes[k];
 					if (stacktype.next<=time) {
 						for (i=stacktype.cursor;i<=stacktype.last;i++) {
 							if (stacks[i]['stacksize']>0) { //Spoil timer passed, spoil a food
