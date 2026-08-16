@@ -3050,8 +3050,12 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					"waste": $scope.foods[foodname].waste}); //Waste (eg cooked meat wastes 25 because cooking turns 50 food into 25)
 			}
 			if (stacks.length>0 && partialstack>0) {
-				stacks[j-1]['stacksize']=Math.floor(stacks[j-1]['stacksize']*partialstack);
-				if (stacks[j-1]['stacksize']==0) {
+				//The partial stack is the last stack of THIS food type, which is the last
+				//one pushed - not stacks[j-1], since j counts within the type while stacks
+				//accumulates across all of them.
+				lastofthistype=stacks.length-1;
+				stacks[lastofthistype]['stacksize']=Math.floor(stacks[lastofthistype]['stacksize']*partialstack);
+				if (stacks[lastofthistype]['stacksize']==0) {
 					totalstacks[foodname]--;
 					totalstacks['all']--;
 				}
