@@ -20,7 +20,7 @@
 			<td><input ng-model="creature.finalweight" ng-change="selectweight()" type="number"></td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Food:<span class="tooltiptext">Food stat of the creature as an adult. A baby's food capacity grows with maturation, so its current reserve is taken as this times the maturation %</span></td>
+			<td style="width: 50%" class="label tooltip">Food:<span class="tooltiptext">Food stat of the creature as an adult. A baby's food capacity starts at 10% of the adult stat and grows linearly to it, so its current reserve is taken as this times (0.1 + 0.9 x maturation)</span></td>
 			<td><input ng-model="creature.finalfood" ng-change="selectweight()" type="number"></td>
 		</tr>
 		<tr>
