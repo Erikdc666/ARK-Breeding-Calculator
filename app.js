@@ -106,6 +106,49 @@
 			}
 		}]);
 
+		//Drag the creature columns into a different order. jQuery UI is already loaded for
+		//the autocomplete, so this needs no new dependency.
+		//
+		//sortable('cancel') undoes jQuery's own DOM move before the model is touched:
+		//Angular owns this DOM through ng-repeat, so letting both reorder it leaves the two
+		//disagreeing about which node is which. Cancel, then reorder the model, and ng-repeat
+		//re-renders from the single source of truth.
+		breedingApp.directive('sortablepanels', function() {
+			return {
+				link: function(scope, element) {
+					var from=null;
+					//Index among real columns only. ui.item.index() counts the drag
+					//placeholder as a sibling, which puts it out by one; the placeholder
+					//carries its own class so filtering to .panelcolumn skips it.
+					function panelindex(item) {
+						return item.parent().children('.panelcolumn').index(item);
+					}
+					jQuery(element).sortable({
+						items: '> .panelcolumn',
+						handle: '.panelhandle',
+						axis: 'x',
+						tolerance: 'pointer',
+						forcePlaceholderSize: true,
+						placeholder: 'panelplaceholder',
+						start: function(e, ui) {
+							from=panelindex(ui.item);
+						},
+						update: function(e, ui) {
+							var to=panelindex(ui.item);
+							jQuery(this).sortable('cancel');
+							if (from===null || to===from) {
+								return;
+							}
+							scope.$apply(function() {
+								scope.panels.splice(to, 0, scope.panels.splice(from, 1)[0]);
+							});
+							from=null;
+						}
+					});
+				}
+			}
+		});
+
 		breedingApp.directive('percentage', function() {
 			return {
 				require: 'ngModel',

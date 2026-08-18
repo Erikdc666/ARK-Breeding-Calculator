@@ -181,8 +181,9 @@
 		opacity: 0;
 		visibility: hidden;
 	}
-		/* Side-by-side creature panels. Columns wrap rather than shrink, because the tables
-		   below have min-width: 400px and squeezing them just produces overflow. */
+		/* Side-by-side creature panels. The row scrolls sideways rather than wrapping:
+		   wrapping just stacks columns down the page, which is what having them side by
+		   side was meant to avoid. */
 		.panelbar {
 			margin-bottom: 10px;
 		}
@@ -192,25 +193,58 @@
 		}
 		.panelrow {
 			display: flex;
-			flex-wrap: wrap;
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			overflow-y: visible;
 			gap: 0px 20px;
 			align-items: flex-start;
+			padding-bottom: 8px;
 		}
 		.panelcolumn {
-			flex: 1 1 420px;
+			flex: 0 0 420px;
 			min-width: 420px;
-			max-width: 100%;
-			position: relative;
 		}
-		.panelclose {
-			position: absolute;
-			top: 0px;
-			right: 0px;
-			z-index: 2;
+		/* Collapsed: the column shrinks to its header, so a dozen creatures stay reachable
+		   without scrolling past the ones you are not looking at. */
+		.panelcolumn.collapsed {
+			flex: 0 0 auto;
+			min-width: 0;
 		}
-		.panelclose input {
+		.panelhead {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			background: linear-gradient(rgba(40, 100, 100, 0.6), rgba(40, 100, 100, 0.3));
+			border-radius: 10px;
+			padding: 4px 8px;
+			margin-bottom: 6px;
+			white-space: nowrap;
+		}
+		.panelhandle {
+			cursor: move;
+			flex: 1 1 auto;
+			user-select: none;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.panelbtn {
 			cursor: pointer;
-			padding: 2px 8px;
+			padding: 0px 6px;
+			opacity: 0.75;
+			font-weight: bold;
+		}
+		.panelbtn:hover {
+			opacity: 1;
+		}
+		/* Where the dragged column will land. */
+		.panelplaceholder {
+			flex: 0 0 420px;
+			min-width: 420px;
+			border: 2px dashed rgba(120, 220, 220, 0.6);
+			border-radius: 10px;
+		}
+		.ui-sortable-helper {
+			opacity: 0.85;
 		}
 
 		/* Trough tab strip. Sits above both trough panels, since a tab owns the food stacks
