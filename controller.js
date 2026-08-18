@@ -2620,21 +2620,21 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 	}
 
-	//Trough profiles - each one is a named creaturelist + troughstacks pair, so a main base
-	//and a water outpost can be kept side by side instead of overwriting each other.
+	//Trough tabs - each tab is a named creaturelist + troughstacks pair, so a main base and a
+	//water outpost can be kept side by side instead of overwriting each other.
 	//
-	//Storage is deliberately split. The profiles themselves go in localStorage, not cookies:
-	//a single setup with 40 creature rows already encodes to about 4KB, which is the whole
-	//per-cookie budget, so several of them simply do not fit. Which profile a tab is showing
-	//goes in sessionStorage, which is per-tab - that is what lets a second tab work on a
-	//different profile instead of inheriting this one's, while both still persist.
+	//Storage is deliberately split. The tabs themselves go in localStorage, not cookies: one
+	//setup with 40 creature rows already encodes to about 4KB, which is the whole per-cookie
+	//budget, so several of them simply do not fit. Which tab is showing goes in
+	//sessionStorage, which is per browser tab - that is what lets a second window work on a
+	//different trough tab instead of inheriting this one's, while both still persist.
 	//
 	//Keys are namespaced by the first path segment so builds served side by side (e.g.
-	///breeding and /breedingPlus) do not share profiles - localStorage is per origin, not
-	//per path, unlike the cookies above.
+	///breeding and /breedingPlus) do not share tabs - localStorage is per origin, not per
+	//path, unlike the cookies above.
 	var storagescope=(window.location.pathname.split('/')[1] || 'breeding');
-	var profileskey='troughprofiles:'+storagescope;
-	var activekey='troughprofile:'+storagescope;
+	var tabskey='troughtabs:'+storagescope;
+	var activetabkey='troughtab:'+storagescope;
 
 	function readstore(store, key) {
 		try {
@@ -2653,80 +2653,89 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 	}
 
-	$scope.saveprofiles=function() {
+	$scope.savetabs=function() {
 		//troughupdatefoodtypes replaces the troughstacks object wholesale, so re-point the
-		//active profile at whatever the scope currently holds before writing.
-		if ($scope.activeprofile) {
-			$scope.activeprofile.creaturelist=$scope.creaturelist;
-			$scope.activeprofile.troughstacks=$scope.troughstacks;
-			writestore('localStorage', profileskey, $scope.troughprofiles);
-			writestore('sessionStorage', activekey, $scope.activeprofile.name);
+		//active tab at whatever the scope currently holds before writing.
+		if ($scope.activetab) {
+			$scope.activetab.creaturelist=$scope.creaturelist;
+			$scope.activetab.troughstacks=$scope.troughstacks;
+			writestore('localStorage', tabskey, $scope.troughtabs);
+			writestore('sessionStorage', activetabkey, $scope.activetab.name);
 		}
 	}
 
-	$scope.troughprofiles=readstore('localStorage', profileskey);
-	if (!angular.isArray($scope.troughprofiles) || $scope.troughprofiles.length==0) {
+	$scope.troughtabs=readstore('localStorage', tabskey);
+	if (!angular.isArray($scope.troughtabs)) {
+		$scope.troughtabs=readstore('localStorage', 'troughprofiles:'+storagescope); //Was called profiles
+	}
+	if (!angular.isArray($scope.troughtabs) || $scope.troughtabs.length==0) {
 		//First run, or upgrading from the single-setup version: adopt whatever the old
-		//cookies held as the first profile rather than discarding it.
-		$scope.troughprofiles=[{
-			name: 'Default',
+		//cookies held as the first tab rather than discarding it.
+		$scope.troughtabs=[{
+			name: 'Trough 1',
 			creaturelist: $scope.creaturelist,
 			troughstacks: $scope.troughstacks
 		}];
 	}
 
-	var wantedprofile=readstore('sessionStorage', activekey);
-	$scope.activeprofile=$scope.troughprofiles[0];
-	for (i=0; i<$scope.troughprofiles.length; i++) {
-		if ($scope.troughprofiles[i].name===wantedprofile) {
-			$scope.activeprofile=$scope.troughprofiles[i];
+	var wantedtab=readstore('sessionStorage', activetabkey);
+	if (wantedtab===undefined) {
+		wantedtab=readstore('sessionStorage', 'troughprofile:'+storagescope); //Was called profiles
+	}
+	$scope.activetab=$scope.troughtabs[0];
+	for (i=0; i<$scope.troughtabs.length; i++) {
+		if ($scope.troughtabs[i].name===wantedtab) {
+			$scope.activetab=$scope.troughtabs[i];
 		}
 	}
-	$scope.creaturelist=$scope.activeprofile.creaturelist || [];
-	$scope.troughstacks=$scope.activeprofile.troughstacks || $scope.troughstacks;
+	$scope.creaturelist=$scope.activetab.creaturelist || [];
+	$scope.troughstacks=$scope.activetab.troughstacks || $scope.troughstacks;
 
-	$scope.switchprofile=function() {
-		$scope.creaturelist=$scope.activeprofile.creaturelist || [];
-		$scope.troughstacks=$scope.activeprofile.troughstacks || {};
-		writestore('sessionStorage', activekey, $scope.activeprofile.name);
+	$scope.switchtab=function() {
+		$scope.creaturelist=$scope.activetab.creaturelist || [];
+		$scope.troughstacks=$scope.activetab.troughstacks || {};
+		writestore('sessionStorage', activetabkey, $scope.activetab.name);
 		$scope.troughupdatefoodtypes();
 		$scope.troughcalc();
 	}
 
-	$scope.addprofile=function() {
-		var name=window.prompt('Name for the new trough profile:', 'Outpost');
-		if (!name) {
-			return;
-		}
+	$scope.addtab=function() {
+		//A tab strip creates instantly and renames later - prompting on the common action
+		//makes it heavier than it should be. Double-click a tab to rename it.
 		var stacks={};
 		for (i=0; i<$scope.foodlist.length; i++) {
 			stacks[$scope.foodlist[i]]=0;
 		}
-		$scope.activeprofile={name: name, creaturelist: [], troughstacks: stacks};
-		$scope.troughprofiles.push($scope.activeprofile);
-		$scope.switchprofile();
+		$scope.activetab={name: 'Trough '+($scope.troughtabs.length+1), creaturelist: [], troughstacks: stacks};
+		$scope.troughtabs.push($scope.activetab);
+		$scope.switchtab();
 	}
 
-	$scope.renameprofile=function() {
-		var name=window.prompt('Rename this trough profile:', $scope.activeprofile.name);
+	$scope.selecttab=function(tab) {
+		$scope.activetab=tab;
+		$scope.switchtab();
+	}
+
+	$scope.renametab=function() {
+		var name=window.prompt('Rename this trough tab:', $scope.activetab.name);
 		if (!name) {
 			return;
 		}
-		$scope.activeprofile.name=name;
-		$scope.saveprofiles();
+		$scope.activetab.name=name;
+		$scope.savetabs();
 	}
 
-	$scope.removeprofile=function() {
-		if ($scope.troughprofiles.length<2) {
-			return; //Always keep one, so there is somewhere to put creatures
+	$scope.removetab=function() {
+		if ($scope.troughtabs.length<2) {
+			return; //Always keep one open, so there is somewhere to put creatures
 		}
-		if (!window.confirm('Delete the trough profile "'+$scope.activeprofile.name+'"?')) {
+		if (!window.confirm('Close the trough tab "'+$scope.activetab.name+'"?')) {
 			return;
 		}
-		$scope.troughprofiles.splice($scope.troughprofiles.indexOf($scope.activeprofile), 1);
-		$scope.activeprofile=$scope.troughprofiles[0];
-		writestore('localStorage', profileskey, $scope.troughprofiles);
-		$scope.switchprofile();
+		$scope.troughtabs.splice($scope.troughtabs.indexOf($scope.activetab), 1);
+		$scope.activetab=$scope.troughtabs[0];
+		writestore('localStorage', tabskey, $scope.troughtabs);
+		$scope.switchtab();
 	}
 
 
@@ -3316,7 +3325,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 
 		var now=new Date();
-		$scope.saveprofiles();
+		$scope.savetabs();
 
 		return output;
 	}

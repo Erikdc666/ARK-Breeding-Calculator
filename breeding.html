@@ -19,18 +19,13 @@
 	</div>
 
 
+	<div class="troughtabs">
+		<span class="troughtab" ng-repeat="tab in troughtabs" ng-class="{'activetab': tab===activetab}" ng-click="selecttab(tab)" ng-dblclick="renametab()" title="Click to switch, double-click to rename">{{tab.name}}<a class="tabclose" ng-show="tab===activetab && troughtabs.length>1" ng-click="$event.stopPropagation(); removetab()" title="Close this trough tab">&times;</a></span>
+		<span class="troughtab newtab" ng-click="addtab()" title="New trough tab">+</span>
+	</div>
 	<div class="tableheader slide" ng-class="{'dimmed': !tablevisibility['Trough']}" ng-click="showhidetable('Trough')">Trough Calculator - Food</div>
 	<div class="tableslide" ng-show="tablevisibility['Trough']">
 	<table>
-		<tr>
-			<td style="width: 50%" class="label tooltip">Profile:<span class="tooltiptext">Separate trough setups, e.g. main base and water outpost. Each tab remembers its own selection, so a second tab can work on a different profile without disturbing this one.</span></td>
-			<td>
-				<select ng-options="p as p.name for p in troughprofiles" ng-model="activeprofile" ng-change="switchprofile()"></select>
-				<input type="button" ng-click="addprofile()" value="New">
-				<input type="button" ng-click="renameprofile()" value="Rename">
-				<input type="button" ng-click="removeprofile()" value="Delete">
-			</td>
-		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Prim+ Stacksizes:<span class="tooltiptext">Check this if you are on Prim+ using the old stack sizes</span></td>
 			<td><input ng-model="settings.stackSize" ng-change="changeStackSize()" type="checkbox"></td>
