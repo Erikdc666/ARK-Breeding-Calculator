@@ -11,10 +11,14 @@
 		<input type="button" class="addpanel" ng-click="addpanel()" value="+ Track another creature">
 	</div>
 
-	<div class="panelrow">
-		<div class="panelcolumn" ng-repeat="panel in panels">
-			<div class="panelclose" ng-show="panels.length>1"><input type="button" ng-click="removepanel(panel)" value="x"></div>
-			<div ng-controller="breedingController" ng-include="'dinopanel.html?d=20260817'"></div>
+	<div class="panelrow" sortablepanels>
+		<div class="panelcolumn" ng-class="{'collapsed': panel.collapsed}" ng-repeat="panel in panels">
+			<div class="panelhead">
+				<span class="panelhandle" title="Drag to reorder">&#9776; {{panel.name || 'Creature'}}<span ng-show="panel.collapsed && panel.maturation"> &middot; {{panel.maturation | percentage}}%</span></span>
+				<a class="panelbtn" ng-click="panel.collapsed=!panel.collapsed" title="{{panel.collapsed ? 'Expand' : 'Collapse to a button'}}"><span ng-hide="panel.collapsed">&minus;</span><span ng-show="panel.collapsed">+</span></a>
+				<a class="panelbtn" ng-show="panels.length>1" ng-click="removepanel(panel)" title="Close this creature">&times;</a>
+			</div>
+			<div ng-show="!panel.collapsed" ng-controller="breedingController" ng-include="'dinopanel.html?d=20260818'"></div>
 		</div>
 	</div>
 
