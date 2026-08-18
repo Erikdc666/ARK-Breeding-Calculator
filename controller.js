@@ -2988,6 +2988,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 	$scope.switchcreature=function() {
 		creature=$scope.creature;
+		if ($scope.panel) {
+			$scope.panel.name=creature.name; //Shell persists the layout off this
+		}
 		creaturedata=$scope.creatures[creature.name];
 		creature.searchname=creature.name; //Ensure the searchname is kept up to date
 		creature.finalweight=creaturedata.weight;
@@ -3310,8 +3313,13 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	}
 
 	$scope.troughaddcreature=function() {
+		//The trough panels belong to the shell, which has no visible creature of its own once
+		//the creature panels became columns - so seed from the leftmost column instead of the
+		//shell's own invisible selection. Maturation is left at 0 and edited in the row; the
+		//shell only tracks each column's creature, not its live maturation.
+		var seedname=($scope.panels && $scope.panels.length && $scope.panels[0].name) ? $scope.panels[0].name : $scope.creature.name;
 		$scope.creaturelist.push({
-			name: $scope.creature.name,
+			name: seedname,
 			maturation: $scope.creature.maturationprogress,
 			quantity: 1
 		});
@@ -3573,6 +3581,50 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		$scope.saveprofiles();
 
 		return output;
+	}
+
+
+	//Side-by-side creature panels.
+	//
+	//Every instance of this controller is already self-contained - its own creature, its own
+	//settings, its own calculations - so a column is just another instance of it, and the
+	//maths needs no changes at all. ng-repeat puts the panel object on the parent scope, and
+	//ng-controller's scope inherits it, which is how an instance tells whether it is a column
+	//(and which one) or the shell that owns the list and the trough panels.
+	var panelskey='breedingpanels:'+storagescope;
+
+	if ($scope.panel===undefined) {
+		//The shell instance.
+		$scope.panels=readstore('localStorage', panelskey);
+		if (!angular.isArray($scope.panels) || $scope.panels.length==0) {
+			$scope.panels=[{name: undefined}];
+		}
+
+		$scope.addpanel=function() {
+			//A new column starts as a copy of the rightmost one, so the creature and the
+			//rates you are looking at carry over. They are independent from that point on -
+			//change one and the others stay put.
+			var seed=$scope.panels[$scope.panels.length-1];
+			$scope.panels.push({name: seed ? seed.name : undefined});
+		}
+
+		$scope.removepanel=function(panel) {
+			if ($scope.panels.length<2) {
+				return; //Keep at least one column
+			}
+			$scope.panels.splice($scope.panels.indexOf(panel), 1);
+		}
+
+		//Columns write their creature name back into their panel object, so a plain deep
+		//watch here is enough to persist the whole layout without any cross-instance calls.
+		$scope.$watch('panels', function() {
+			writestore('localStorage', panelskey, $scope.panels);
+		}, true);
+	} else if ($scope.panel.name!==undefined && $scope.panel.name in $scope.creatures) {
+		//A column that already knows which creature it was showing. Settings are deliberately
+		//not stored per panel: every instance loads the same settings cookie, so a new column
+		//inherits the current rates, and diverges only if you then edit one of them.
+		$scope.creature={name: $scope.panel.name, maturationprogress: 0};
 	}
 
 	$scope.switchcreature();
