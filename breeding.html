@@ -11,15 +11,24 @@
 		<input type="button" class="addpanel" ng-click="addpanel()" value="+ Track another creature">
 	</div>
 
+	<div class="rowwrap">
+	<div class="collapsedtray" ng-show="(panels | filter:collapsedonly).length">
+		<div class="collapsedcolumn" ng-repeat="panel in panels | filter:collapsedonly">
+			<a class="panelbtn" ng-click="panel.collapsed=false" title="Expand">+</a>
+			<span class="collapsedname">{{panel.name || 'Creature'}}<span ng-show="panel.maturation"> &middot; {{panel.maturation | percentage}}%</span></span>
+			<a class="panelbtn" ng-show="panels.length>1" ng-click="removepanel(panel)" title="Close this creature">&times;</a>
+		</div>
+	</div>
 	<div class="panelrow" sortable-list="panels" sortable-handle=".panelhandle">
-		<div class="panelcolumn" ng-class="{'collapsed': panel.collapsed}" ng-repeat="panel in panels">
+		<div class="panelcolumn" ng-repeat="panel in panels | filter:expandedonly">
 			<div class="panelhead">
 				<span class="panelhandle" title="Drag to reorder">&#9776; {{panel.name || 'Creature'}}<span ng-show="panel.collapsed && panel.maturation"> &middot; {{panel.maturation | percentage}}%</span></span>
 				<a class="panelbtn" ng-click="panel.collapsed=!panel.collapsed" title="{{panel.collapsed ? 'Expand' : 'Collapse to a button'}}"><span ng-hide="panel.collapsed">&minus;</span><span ng-show="panel.collapsed">+</span></a>
 				<a class="panelbtn" ng-show="panels.length>1" ng-click="removepanel(panel)" title="Close this creature">&times;</a>
 			</div>
-			<div ng-show="!panel.collapsed" ng-controller="breedingController" ng-include="'dinopanel.html?d=20260818'"></div>
+			<div ng-controller="breedingController" ng-include="'dinopanel.html?d=20260818'"></div>
 		</div>
+	</div>
 	</div>
 
 
@@ -27,16 +36,25 @@
 		<input type="button" class="addpanel" ng-click="addtrough()" value="+ Add a trough">
 	</div>
 
+	<div class="rowwrap">
+	<div class="collapsedtray" ng-show="(troughs | filter:collapsedonly).length">
+		<div class="collapsedcolumn" ng-repeat="trough in troughs | filter:collapsedonly">
+			<a class="panelbtn" ng-click="trough.collapsed=false" title="Expand">+</a>
+			<span class="collapsedname">{{trough.name}}<span ng-show="trough.creaturelist.length"> &middot; {{trough.creaturelist.length}}</span></span>
+			<a class="panelbtn" ng-show="troughs.length>1" ng-click="removetrough(trough)" title="Close this trough">&times;</a>
+		</div>
+	</div>
 	<div class="panelrow troughrow" sortable-list="troughs" sortable-handle=".troughhandle">
-		<div class="panelcolumn troughcolumn" ng-class="{'collapsed': trough.collapsed}" ng-repeat="trough in troughs">
+		<div class="panelcolumn troughcolumn" ng-repeat="trough in troughs | filter:expandedonly">
 			<div class="panelhead">
 				<span class="troughhandle" title="Drag to reorder">&#9776; {{trough.name}}<span ng-show="trough.collapsed && trough.creaturelist.length"> &middot; {{trough.creaturelist.length}}</span></span>
 				<a class="panelbtn" ng-click="renametrough(trough)" title="Rename">&#9998;</a>
 				<a class="panelbtn" ng-click="trough.collapsed=!trough.collapsed" title="{{trough.collapsed ? 'Expand' : 'Collapse to a button'}}"><span ng-hide="trough.collapsed">&minus;</span><span ng-show="trough.collapsed">+</span></a>
 				<a class="panelbtn" ng-show="troughs.length>1" ng-click="removetrough(trough)" title="Close this trough">&times;</a>
 			</div>
-			<div ng-show="!trough.collapsed" ng-controller="breedingController" ng-include="'troughpanel.html?d=20260818'"></div>
+			<div ng-controller="breedingController" ng-include="'troughpanel.html?d=20260818'"></div>
 		</div>
+	</div>
 	</div>
 
 

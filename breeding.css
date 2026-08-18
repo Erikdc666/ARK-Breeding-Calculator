@@ -17,6 +17,11 @@
 		input {
 			width: 50px;
 		}
+		/* 50px fits about four digits at 10pt, so a Food stat like 16500 clipped to "1650"
+		   at a glance. Every numeric field gets the same width, so the columns line up. */
+		input[type=number] {
+			width: 80px;
+		}
 		input[type=button] {
 			width: auto;
 		}
@@ -191,6 +196,36 @@
 			padding: 6px 14px;
 			cursor: pointer;
 		}
+		/* Tray on the left holds the collapsed columns, stacked vertically, so they cost
+		   almost no horizontal room; the expanded columns scroll sideways beside it. This
+		   needs two containers - flexbox cannot put some children in a horizontal scroll
+		   strip and the rest in a vertical stack. */
+		.rowwrap {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			margin-bottom: 10px;
+		}
+		.collapsedtray {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			flex: 0 0 auto;
+			max-width: 220px;
+		}
+		.collapsedcolumn {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			background: linear-gradient(rgba(40, 100, 100, 0.6), rgba(40, 100, 100, 0.3));
+			border-radius: 10px;
+			padding: 4px 8px;
+			white-space: nowrap;
+		}
+		.collapsedname {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
 		.panelrow {
 			display: flex;
 			flex-wrap: nowrap;
@@ -199,16 +234,12 @@
 			gap: 0px 20px;
 			align-items: flex-start;
 			padding-bottom: 8px;
+			flex: 1 1 auto;
+			min-width: 0;
 		}
 		.panelcolumn {
 			flex: 0 0 420px;
 			min-width: 420px;
-		}
-		/* Collapsed: the column shrinks to its header, so a dozen creatures stay reachable
-		   without scrolling past the ones you are not looking at. */
-		.panelcolumn.collapsed {
-			flex: 0 0 auto;
-			min-width: 0;
 		}
 		.panelhead {
 			display: flex;
@@ -252,10 +283,6 @@
 		.troughcolumn {
 			flex: 0 0 460px;
 			min-width: 460px;
-		}
-		.troughcolumn.collapsed {
-			flex: 0 0 auto;
-			min-width: 0;
 		}
 		.troughhandle {
 			cursor: move;

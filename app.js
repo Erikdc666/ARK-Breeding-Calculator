@@ -142,8 +142,25 @@
 								return;
 							}
 							scope.$apply(function() {
+								//from/to index the *expanded* columns, because collapsed
+								//ones are rendered in the tray and are not in this row at
+								//all. Reorder within the slots the expanded items occupy,
+								//so collapsed ones keep their place in the underlying list.
 								var list=scope[attrs.sortablelist];
-								list.splice(to, 0, list.splice(from, 1)[0]);
+								var slots=[];
+								for (var i=0; i<list.length; i++) {
+									if (!list[i].collapsed) {
+										slots.push(i);
+									}
+								}
+								var expanded=[];
+								for (var k=0; k<slots.length; k++) {
+									expanded.push(list[slots[k]]);
+								}
+								expanded.splice(to, 0, expanded.splice(from, 1)[0]);
+								for (var j=0; j<slots.length; j++) {
+									list[slots[j]]=expanded[j];
+								}
 							});
 							from=null;
 						}

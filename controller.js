@@ -2798,6 +2798,17 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 	}
 
+	//Predicates for the two ng-repeats each row runs: the expanded columns go in the
+	//scrolling strip, the collapsed ones in the tray beside it. Pure functions, so defining
+	//them on every instance rather than only the shell costs nothing.
+	$scope.collapsedonly=function(item) {
+		return !!item.collapsed;
+	}
+
+	$scope.expandedonly=function(item) {
+		return !item.collapsed;
+	}
+
 	function emptystacks() {
 		var stacks={};
 		for (i=0; i<$scope.foodlist.length; i++) {
