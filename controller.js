@@ -3058,6 +3058,12 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 		creature.maturationprogress=validatenumber(creature.maturationprogress, 0, 1);
 
+		if ($scope.panel) {
+			//Mirror into the shared panel object: the shell reads it for Add All, and its
+			//deep watch persists it so a reload restores where each column had got to.
+			$scope.panel.maturation=creature.maturationprogress;
+		}
+
 		creature.currentweight=creature.finalweight*creature.maturationprogress;
 		creature.currentfood=babyfoodcapacity(creature.finalfood, creature.maturationprogress);
 
@@ -3317,12 +3323,32 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		//the creature panels became columns - so seed from the leftmost column instead of the
 		//shell's own invisible selection. Maturation is left at 0 and edited in the row; the
 		//shell only tracks each column's creature, not its live maturation.
-		var seedname=($scope.panels && $scope.panels.length && $scope.panels[0].name) ? $scope.panels[0].name : $scope.creature.name;
+		var seed=($scope.panels && $scope.panels.length && $scope.panels[0].name) ? $scope.panels[0] : null;
 		$scope.creaturelist.push({
-			name: seedname,
-			maturation: $scope.creature.maturationprogress,
+			name: seed ? seed.name : $scope.creature.name,
+			maturation: seed ? (seed.maturation || 0) : $scope.creature.maturationprogress,
 			quantity: 1
 		});
+		$scope.troughupdatefoodtypes();
+		$scope.troughcalc();
+	}
+
+	$scope.addallcreatures=function() {
+		//One row per tracked column, at the maturation that column is showing. Adds rather
+		//than replaces, so clicking twice gives you two of each - remove rows to taste.
+		if (!$scope.panels) {
+			return;
+		}
+		for (i=0; i<$scope.panels.length; i++) {
+			if (!$scope.panels[i].name || !($scope.panels[i].name in $scope.creatures)) {
+				continue;
+			}
+			$scope.creaturelist.push({
+				name: $scope.panels[i].name,
+				maturation: $scope.panels[i].maturation || 0,
+				quantity: 1
+			});
+		}
 		$scope.troughupdatefoodtypes();
 		$scope.troughcalc();
 	}
@@ -3627,7 +3653,15 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		$scope.creature={name: $scope.panel.name, maturationprogress: 0};
 	}
 
+	//Read this before switchcreature: it resets maturation to 0, and the recalculation that
+	//follows mirrors that 0 straight back into the panel object, erasing what we came to
+	//restore.
+	var restoredmaturation=($scope.panel && $scope.panel.maturation>0) ? $scope.panel.maturation : 0;
 	$scope.switchcreature();
+	if (restoredmaturation>0) {
+		$scope.creature.maturationprogress=restoredmaturation;
+		$scope.selectmaturation();
+	}
 	$scope.troughupdatefoodtypes();
 
 }]);
