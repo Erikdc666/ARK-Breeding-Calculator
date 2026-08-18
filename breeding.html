@@ -64,7 +64,8 @@
 			<td>Remove</td>
 		</thead>
 		<tr>
-			<td><input type="button" ng-click="troughaddcreature()" value="Add Creature"></td>
+			<td><input type="button" ng-click="troughaddcreature()" value="Add Creature">
+				<input type="button" ng-click="addallcreatures()" value="Add All Tracked" title="Add one row for every creature panel above, at the maturation it is showing"></td>
 		</tr>
 		<tr ng-repeat="(index, troughcreature) in creaturelist">
 			<td><select ng-options="name as name for (name, details) in creatures" ng-model="troughcreature.name" ng-change="troughupdatefoodtypes();troughcalc()"></select></td>
