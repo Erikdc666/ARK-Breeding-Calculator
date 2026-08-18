@@ -247,38 +247,24 @@
 			opacity: 0.85;
 		}
 
-		/* Trough tab strip. Sits above both trough panels, since a tab owns the food stacks
-		   and the creature list together. */
-		.troughtabs {
-			display: flex;
-			flex-wrap: wrap;
-			align-items: flex-end;
-			gap: 4px;
-			margin-bottom: 4px;
+		/* Trough columns are a little wider than creature columns: the food table carries a
+		   number input on every row. */
+		.troughcolumn {
+			flex: 0 0 460px;
+			min-width: 460px;
 		}
-		.troughtab {
-			background: linear-gradient(rgba(40, 100, 100, 0.35), rgba(40, 100, 100, 0.15));
-			border-radius: 8px 8px 0 0;
-			padding: 5px 12px;
-			cursor: pointer;
+		.troughcolumn.collapsed {
+			flex: 0 0 auto;
+			min-width: 0;
+		}
+		.troughhandle {
+			cursor: move;
+			flex: 1 1 auto;
 			user-select: none;
-			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
-		.troughtab:hover {
-			background: linear-gradient(rgba(40, 130, 130, 0.55), rgba(40, 130, 130, 0.25));
-		}
-		.troughtab.activetab {
-			background: linear-gradient(rgba(40, 100, 100, 0.7), rgba(40, 100, 100, 0.4));
-			font-weight: bold;
-		}
-		.troughtab .tabclose {
-			margin-left: 8px;
-			opacity: 0.7;
-		}
-		.troughtab .tabclose:hover {
-			opacity: 1;
-		}
-		.troughtab.newtab {
-			font-weight: bold;
-			padding: 5px 14px;
+		.troughrow .panelplaceholder {
+			flex: 0 0 460px;
+			min-width: 460px;
 		}

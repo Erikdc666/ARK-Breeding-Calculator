@@ -106,41 +106,44 @@
 			}
 		}]);
 
-		//Drag the creature columns into a different order. jQuery UI is already loaded for
-		//the autocomplete, so this needs no new dependency.
+		//Drag columns into a different order. Used by both the creature row and the trough
+		//row, so the list and the drag handle come from attributes rather than being baked
+		//in. jQuery UI is already loaded for the autocomplete, so this needs no new
+		//dependency.
 		//
-		//sortable('cancel') undoes jQuery's own DOM move before the model is touched:
-		//Angular owns this DOM through ng-repeat, so letting both reorder it leaves the two
-		//disagreeing about which node is which. Cancel, then reorder the model, and ng-repeat
-		//re-renders from the single source of truth.
-		breedingApp.directive('sortablepanels', function() {
+		//sortable('cancel') runs before the model is touched: Angular owns this DOM through
+		//ng-repeat, so letting both reorder it leaves the two disagreeing about which node
+		//is which. Cancel the DOM move, reorder the array, let ng-repeat re-render from the
+		//single source of truth.
+		breedingApp.directive('sortablelist', function() {
 			return {
-				link: function(scope, element) {
+				link: function(scope, element, attrs) {
 					var from=null;
 					//Index among real columns only. ui.item.index() counts the drag
 					//placeholder as a sibling, which puts it out by one; the placeholder
-					//carries its own class so filtering to .panelcolumn skips it.
-					function panelindex(item) {
+					//carries its own class, so filtering to .panelcolumn skips it.
+					function columnindex(item) {
 						return item.parent().children('.panelcolumn').index(item);
 					}
 					jQuery(element).sortable({
 						items: '> .panelcolumn',
-						handle: '.panelhandle',
+						handle: attrs.sortablehandle,
 						axis: 'x',
 						tolerance: 'pointer',
 						forcePlaceholderSize: true,
 						placeholder: 'panelplaceholder',
 						start: function(e, ui) {
-							from=panelindex(ui.item);
+							from=columnindex(ui.item);
 						},
 						update: function(e, ui) {
-							var to=panelindex(ui.item);
+							var to=columnindex(ui.item);
 							jQuery(this).sortable('cancel');
 							if (from===null || to===from) {
 								return;
 							}
 							scope.$apply(function() {
-								scope.panels.splice(to, 0, scope.panels.splice(from, 1)[0]);
+								var list=scope[attrs.sortablelist];
+								list.splice(to, 0, list.splice(from, 1)[0]);
 							});
 							from=null;
 						}

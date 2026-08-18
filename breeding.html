@@ -11,7 +11,7 @@
 		<input type="button" class="addpanel" ng-click="addpanel()" value="+ Track another creature">
 	</div>
 
-	<div class="panelrow" sortablepanels>
+	<div class="panelrow" sortable-list="panels" sortable-handle=".panelhandle">
 		<div class="panelcolumn" ng-class="{'collapsed': panel.collapsed}" ng-repeat="panel in panels">
 			<div class="panelhead">
 				<span class="panelhandle" title="Drag to reorder">&#9776; {{panel.name || 'Creature'}}<span ng-show="panel.collapsed && panel.maturation"> &middot; {{panel.maturation | percentage}}%</span></span>
@@ -23,57 +23,22 @@
 	</div>
 
 
-	<div class="troughtabs">
-		<span class="troughtab" ng-repeat="tab in troughtabs" ng-class="{'activetab': tab===activetab}" ng-click="selecttab(tab)" ng-dblclick="renametab()" title="Click to switch, double-click to rename">{{tab.name}}<a class="tabclose" ng-show="tab===activetab && troughtabs.length>1" ng-click="$event.stopPropagation(); removetab()" title="Close this trough tab">&times;</a></span>
-		<span class="troughtab newtab" ng-click="addtab()" title="New trough tab">+</span>
-	</div>
-	<div class="tableheader slide" ng-class="{'dimmed': !tablevisibility['Trough']}" ng-click="showhidetable('Trough')">Trough Calculator - Food</div>
-	<div class="tableslide" ng-show="tablevisibility['Trough']">
-	<table>
-		<tr>
-			<td style="width: 50%" class="label tooltip">Prim+ Stacksizes:<span class="tooltiptext">Check this if you are on Prim+ using the old stack sizes</span></td>
-			<td><input ng-model="settings.stackSize" ng-change="changeStackSize()" type="checkbox"></td>
-		</tr>
-		<tr>
-			<td style="width: 50%" class="label tooltip">Trough Type:<span class="tooltiptext">Sets the spoil rate of the food based on the container you will use, Tek=100x, Normal=4x, Clicker=1x</span></td>
-			<td><select ng-options="type as type for (type, multi) in troughtypes" ng-model="settings.troughtype" ng-change="troughcalc()"></select></td>
-		</tr>
-		<tr ng-repeat="(food, stacks) in troughstacks">
-			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in troughs</span></td>
-			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks</td>
-		</tr>
-		<tr ng-repeat="(type, time) in troughdata.times">
-			<td style="width: 50%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>
-			<td>{{time | secondsToDateTime}}</td>
-		</tr>
-		<tr>
-			<td style="width: 50%" class="label tooltip">Loss<span class="tooltiptext">Amount of food points to spoilage, cooking meat is automatic 50% loss</span></td>
-			<td>{{(troughdata.spoiledpoints+troughdata.wastedpoints)/troughdata.totalpoints*100}}%</td>
-		</tr>
-	</table>
+	<div class="panelbar">
+		<input type="button" class="addpanel" ng-click="addtrough()" value="+ Add a trough">
 	</div>
 
-	<div class="tableheader slide" ng-class="{'dimmed': !tablevisibility['TroughCreatures']}" ng-click="showhidetable('TroughCreatures')">Trough Calculator - Creatures</div>
-	<div class="tableslide" ng-show="tablevisibility['TroughCreatures']">
-	<table>
-		<thead>
-			<td>Creature</td>
-			<td>Maturation</td>
-			<td>Quantity</td>
-			<td>Remove</td>
-		</thead>
-		<tr>
-			<td><input type="button" ng-click="troughaddcreature()" value="Add Creature">
-				<input type="button" ng-click="addallcreatures()" value="Add All Tracked" title="Add one row for every creature panel above, at the maturation it is showing"></td>
-		</tr>
-		<tr ng-repeat="(index, troughcreature) in creaturelist">
-			<td><select ng-options="name as name for (name, details) in creatures" ng-model="troughcreature.name" ng-change="troughupdatefoodtypes();troughcalc()"></select></td>
-			<td><input ng-model="troughcreature.maturation" ng-change="troughcalc()" ng-model-options="{debounce: 300}" percentage type="number"></td>
-			<td><input ng-model="troughcreature.quantity" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"></td>
-			<td><input type="button" ng-click="troughremovecreature(index)" value="Remove"></td>
-		</tr>
-	</table>
+	<div class="panelrow troughrow" sortable-list="troughs" sortable-handle=".troughhandle">
+		<div class="panelcolumn troughcolumn" ng-class="{'collapsed': trough.collapsed}" ng-repeat="trough in troughs">
+			<div class="panelhead">
+				<span class="troughhandle" title="Drag to reorder">&#9776; {{trough.name}}<span ng-show="trough.collapsed && trough.creaturelist.length"> &middot; {{trough.creaturelist.length}}</span></span>
+				<a class="panelbtn" ng-click="renametrough(trough)" title="Rename">&#9998;</a>
+				<a class="panelbtn" ng-click="trough.collapsed=!trough.collapsed" title="{{trough.collapsed ? 'Expand' : 'Collapse to a button'}}"><span ng-hide="trough.collapsed">&minus;</span><span ng-show="trough.collapsed">+</span></a>
+				<a class="panelbtn" ng-show="troughs.length>1" ng-click="removetrough(trough)" title="Close this trough">&times;</a>
+			</div>
+			<div ng-show="!trough.collapsed" ng-controller="breedingController" ng-include="'troughpanel.html?d=20260818'"></div>
+		</div>
 	</div>
+
 
 	<p class="footer">
 	<input id="animationscb" class="hidden" type="checkbox" ng-model="displayconfig.showanimations" ng-true-value="0" ng-false-value="1" ng-change="showhideanimations()"><label for="animationscb">Disable Animations</label>
