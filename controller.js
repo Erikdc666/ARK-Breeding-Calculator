@@ -3020,6 +3020,14 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		//A dotted path resolves to the same creature object from either scope.
 		$scope.creature.foodunit=$scope.foodlists[creaturedata.type][0];
 
+		if ($scope.panel) {
+			//Picking a different creature resets these to that species' defaults, so the
+			//stored overrides have to go with them - otherwise a refresh would restore the
+			//previous creature's weight onto the new one.
+			$scope.panel.finalweight=creature.finalweight;
+			$scope.panel.finalfood=creature.finalfood;
+		}
+
 		$scope.statscalc();
 	}
 
@@ -3062,6 +3070,14 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 		creature.finalweight=validatenumber(creature.finalweight, 1, 10000);
 		creature.finalfood=validatenumber(creature.finalfood, 0, 10000000);
+
+		if ($scope.panel) {
+			//These are per-creature overrides - a bred Rex is not the base 500/3000 - so
+			//they belong in the panel object with the name and maturation, or a refresh
+			//throws away whatever was typed and silently reverts to the species defaults.
+			$scope.panel.finalweight=creature.finalweight;
+			$scope.panel.finalfood=creature.finalfood;
+		}
 
 		$scope.finalbuffercalc();
 		$scope.selectmaturation();
@@ -3672,14 +3688,24 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		$scope.creature={name: $scope.panel.name, maturationprogress: 0};
 	}
 
-	//Read this before switchcreature: it resets maturation to 0, and the recalculation that
-	//follows mirrors that 0 straight back into the panel object, erasing what we came to
-	//restore.
+	//Read these before switchcreature: it resets maturation and both stats to the species
+	//defaults, and the recalculation that follows mirrors those defaults straight back into
+	//the panel object, erasing what we came to restore.
 	var restoredmaturation=($scope.panel && $scope.panel.maturation>0) ? $scope.panel.maturation : 0;
+	var restoredweight=($scope.panel && $scope.panel.finalweight>0) ? $scope.panel.finalweight : 0;
+	var restoredfood=($scope.panel && $scope.panel.finalfood>0) ? $scope.panel.finalfood : 0;
 	$scope.switchcreature();
+	if (restoredweight>0) {
+		$scope.creature.finalweight=restoredweight;
+	}
+	if (restoredfood>0) {
+		$scope.creature.finalfood=restoredfood;
+	}
 	if (restoredmaturation>0) {
 		$scope.creature.maturationprogress=restoredmaturation;
-		$scope.selectmaturation();
+	}
+	if (restoredweight>0 || restoredfood>0 || restoredmaturation>0) {
+		$scope.selectweight(); //Recalculates everything off the restored values
 	}
 	$scope.troughupdatefoodtypes();
 
