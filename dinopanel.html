@@ -16,7 +16,7 @@
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Food Type:<span class="tooltiptext">Type of food used in all food stats below</span></td>
-			<td><select ng-options="food for food in foodlists[creatures[creature.name].type]" ng-model="foodunit" ng-change="selectweight()"></select></td>
+			<td><select ng-options="food for food in foodlists[creatures[creature.name].type]" ng-model="creature.foodunit" ng-change="selectweight()"></select></td>
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label">Hatch Multiplier: </td>
@@ -66,11 +66,11 @@
 			<td>{{creature.maturationtimeremaining | secondsToDateTime}}</td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Food to Juvenile (E):<span class="tooltiptext">{{foodunit}} the creature will actually eat (i.e. no spoilage) between now and reaching juvenile</span></td>
+			<td style="width: 50%" class="label tooltip">Food to Juvenile (E):<span class="tooltiptext">{{creature.foodunit}} the creature will actually eat (i.e. no spoilage) between now and reaching juvenile</span></td>
 			<td>{{creature.tojuvfooditems | number:0}} <span ng-show="creature.currentfood>0">({{creature.tojuvfooditemsnet | number:0}} after reserve)</span></td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Food to Adult (E):<span class="tooltiptext">{{foodunit}} the creature will actually eat (i.e. no spoilage) between now and reaching adult</span></td>
+			<td style="width: 50%" class="label tooltip">Food to Adult (E):<span class="tooltiptext">{{creature.foodunit}} the creature will actually eat (i.e. no spoilage) between now and reaching adult</span></td>
 			<td>{{creature.toadultfooditems | number:0}} <span ng-show="creature.currentfood>0">({{creature.toadultfooditemsnet | number:0}} after reserve)</span></td>
 		</tr>
 		<tr>
@@ -80,7 +80,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Food per period (E):<span class="tooltiptext">{{foodunit}} the creature will actually eat (i.e. no spoilage) during the next {{settings.foodrate_time_units}}</span></td>
+			<td style="width: 50%" class="label tooltip">Food per period (E):<span class="tooltiptext">{{creature.foodunit}} the creature will actually eat (i.e. no spoilage) during the next {{settings.foodrate_time_units}}</span></td>
 			<td>{{creature.nextfoodpertimeunit}} per {{settings.foodrate_time_units}}</td>
 		</tr>
 	</table>
@@ -98,11 +98,11 @@
 			<td>{{creature.foodreservetime | secondsToDateTime}}</td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Current Buffer:<span class="tooltiptext">How long the baby will last with a full inventory of {{foodunit}}</span></td>
+			<td style="width: 50%" class="label tooltip">Current Buffer:<span class="tooltiptext">How long the baby will last with a full inventory of {{creature.foodunit}}</span></td>
 			<td>{{creature.currentbabybuffer | secondsToDateTime}}</td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Food to Fill:<span class="tooltiptext">The amount of {{foodunit}} the baby's inventory can currently hold</span></td>
+			<td style="width: 50%" class="label tooltip">Food to Fill:<span class="tooltiptext">The amount of {{creature.foodunit}} the baby's inventory can currently hold</span></td>
 			<td>{{creature.foodtofill | number:0}}</td>
 		</tr>
 		<tr>
@@ -132,7 +132,7 @@
 			<td><input ng-model="settings.lossfactor" ng-change="totalfoodcalc()" type="number"></td>
 		</tr>
 		<tr ng-repeat="(day,food) in creature.fooditemsforday">
-			<td style="width: 50%" class="label tooltip">Day {{day}} Food<span class="tooltiptext">{{foodunit}} required on day {{day}} of maturation</span></td>
+			<td style="width: 50%" class="label tooltip">Day {{day}} Food<span class="tooltiptext">{{creature.foodunit}} required on day {{day}} of maturation</span></td>
 			<td>{{food | number:0}}</td>
 		</tr>
 	</table>

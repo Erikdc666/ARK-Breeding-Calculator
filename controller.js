@@ -2991,7 +2991,11 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		creature.minfoodrate=$scope.settings.baseminfoodrate*creaturedata.babyfoodrate*creaturedata.extrababyfoodrate*$scope.settings.consumptionspeed;
 		creature.foodratedecay=(creature.maxfoodrate-creature.minfoodrate)/creature.maturationtime;
 		creature.desiredbabybuffer=1;
-		$scope.foodunit=$scope.foodlists[creaturedata.type][0];
+		//On the creature rather than the scope: the panels are pulled in with ng-include,
+		//which makes a child scope, and a dotless ng-model there writes to the child and
+		//shadows the controller's copy - so the dropdown moved but nothing recalculated.
+		//A dotted path resolves to the same creature object from either scope.
+		$scope.creature.foodunit=$scope.foodlists[creaturedata.type][0];
 		$scope.selectweight();
 		$scope.totalfoodcalc();
 		$scope.babybuffercalc();
@@ -3010,7 +3014,11 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		creature.currentfood=0;
 		creature.desiredbabybuffer=30;
 		creature.maturationprogress=0;
-		$scope.foodunit=$scope.foodlists[creaturedata.type][0];
+		//On the creature rather than the scope: the panels are pulled in with ng-include,
+		//which makes a child scope, and a dotless ng-model there writes to the child and
+		//shadows the controller's copy - so the dropdown moved but nothing recalculated.
+		//A dotted path resolves to the same creature object from either scope.
+		$scope.creature.foodunit=$scope.foodlists[creaturedata.type][0];
 
 		$scope.statscalc();
 	}
@@ -3098,17 +3106,17 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		creature.babyfood=$scope.getfoodforperiod(0, creature.babytime, $scope.creature);
 		creature.tojuvfood=$scope.getfoodforperiod(creature.maturationtimecomplete, creature.babytime, $scope.creature);
 		creature.toadultfood=$scope.getfoodforperiod(creature.maturationtimecomplete, creature.maturationtime, $scope.creature);
-		creature.totalfooditems=creature.totalfood/($scope.foods[$scope.foodunit].food*creaturedata.foodmultipliers[$scope.foodunit]);
-		creature.babyfooditems=creature.babyfood/($scope.foods[$scope.foodunit].food*creaturedata.foodmultipliers[$scope.foodunit]);
-		creature.tojuvfooditems=creature.tojuvfood/($scope.foods[$scope.foodunit].food*creaturedata.foodmultipliers[$scope.foodunit]);
-		creature.toadultfooditems=creature.toadultfood/($scope.foods[$scope.foodunit].food*creaturedata.foodmultipliers[$scope.foodunit]);
+		creature.totalfooditems=creature.totalfood/($scope.foods[$scope.creature.foodunit].food*creaturedata.foodmultipliers[$scope.creature.foodunit]);
+		creature.babyfooditems=creature.babyfood/($scope.foods[$scope.creature.foodunit].food*creaturedata.foodmultipliers[$scope.creature.foodunit]);
+		creature.tojuvfooditems=creature.tojuvfood/($scope.foods[$scope.creature.foodunit].food*creaturedata.foodmultipliers[$scope.creature.foodunit]);
+		creature.toadultfooditems=creature.toadultfood/($scope.foods[$scope.creature.foodunit].food*creaturedata.foodmultipliers[$scope.creature.foodunit]);
 
 		// add food consumption rate per minute / hour / day
 		foodrate_time_multiplier = $scope.foodrate_time_units[$scope.settings.foodrate_time_units];
 		creature.nextminfood = Math.ceil( $scope.getfoodforperiod(creature.maturationtimecomplete, creature.maturationtimecomplete+60, $scope.creature) * foodrate_time_multiplier * 100 ) / 100;
 
 		// add food needed for 1 minute / hour / day
-		creature.nextfoodpertimeunit = Math.ceil( ( creature.nextminfood / ($scope.foods[$scope.foodunit].food*creaturedata.foodmultipliers[$scope.foodunit]) ) * 100 ) / 100;
+		creature.nextfoodpertimeunit = Math.ceil( ( creature.nextminfood / ($scope.foods[$scope.creature.foodunit].food*creaturedata.foodmultipliers[$scope.creature.foodunit]) ) * 100 ) / 100;
 
 		creature.foodforday={};
 		creature.fooditemsforday={};
@@ -3116,7 +3124,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		food=$scope.getfoodforperiod((day-1)*24*60*60, day*24*60*60, $scope.creature);
 		while (food>0 && day<20) {
 			creature.foodforday[day]=food+food*$scope.settings.lossfactor/100;
-			creature.fooditemsforday[day]=(food+food*($scope.settings.lossfactor/100))/($scope.foods[$scope.foodunit].food*creaturedata.foodmultipliers[$scope.foodunit]);
+			creature.fooditemsforday[day]=(food+food*($scope.settings.lossfactor/100))/($scope.foods[$scope.creature.foodunit].food*creaturedata.foodmultipliers[$scope.creature.foodunit]);
 			day++;
 			food=$scope.getfoodforperiod((day-1)*24*60*60, day*24*60*60, $scope.creature);
 		}
@@ -3154,14 +3162,14 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		//Food still needed from outside the creature to reach each milestone
 		creature.tojuvfoodnet=Math.max(0, creature.tojuvfood-reserve);
 		creature.toadultfoodnet=Math.max(0, creature.toadultfood-reserve);
-		creature.tojuvfooditemsnet=creature.tojuvfoodnet/($scope.foods[$scope.foodunit].food*creaturedata.foodmultipliers[$scope.foodunit]);
-		creature.toadultfooditemsnet=creature.toadultfoodnet/($scope.foods[$scope.foodunit].food*creaturedata.foodmultipliers[$scope.foodunit]);
+		creature.tojuvfooditemsnet=creature.tojuvfoodnet/($scope.foods[$scope.creature.foodunit].food*creaturedata.foodmultipliers[$scope.creature.foodunit]);
+		creature.toadultfooditemsnet=creature.toadultfoodnet/($scope.foods[$scope.creature.foodunit].food*creaturedata.foodmultipliers[$scope.creature.foodunit]);
 	}
 
 	$scope.babybuffercalc=function() {
 		creature=$scope.creature;
 		creaturedata=$scope.creatures[creature.name];
-		var foodname=$scope.foodunit;
+		var foodname=$scope.creature.foodunit;
 		food=$scope.foods[foodname];
 		foodmult=creaturedata.foodmultipliers[foodname];
 
@@ -3241,7 +3249,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 		creature=$scope.creature;
 		creaturedata=$scope.creatures[creature.name];
-		var foodname=$scope.foodunit;
+		var foodname=$scope.creature.foodunit;
 		food=$scope.foods[foodname];
 		foodmult=creaturedata.foodmultipliers[foodname];
 
@@ -3289,7 +3297,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 		creature=$scope.creature;
 		creaturedata=$scope.creatures[creature.name];
-		var foodname=$scope.foodunit;
+		var foodname=$scope.creature.foodunit;
 		food=$scope.foods[foodname];
 		foodmult=creaturedata.foodmultipliers[foodname];
 
