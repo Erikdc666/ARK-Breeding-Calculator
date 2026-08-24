@@ -66,6 +66,10 @@
 			<td>{{creature.maturationtimeremaining | secondsToDateTime}}</td>
 		</tr>
 		<tr>
+			<td style="width: 50%" class="label tooltip">Total Food (E):<span class="tooltiptext">{{creature.foodunit}} the creature will actually eat (i.e. no spoilage) from birth all the way to adult, regardless of where it is now</span></td>
+			<td>{{creature.totalfooditems | number:0}}</td>
+		</tr>
+		<tr>
 			<td style="width: 50%" class="label tooltip">Food to Juvenile (E):<span class="tooltiptext">{{creature.foodunit}} the creature will actually eat (i.e. no spoilage) between now and reaching juvenile</span></td>
 			<td>{{creature.tojuvfooditems | number:0}} <span ng-show="creature.currentfood>0">({{creature.tojuvfooditemsnet | number:0}} after reserve)</span></td>
 		</tr>

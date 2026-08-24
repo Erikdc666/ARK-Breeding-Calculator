@@ -2008,7 +2008,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			food: 6500.0
 		},
 
-		Parasaurolophus: { //
+		Parasaur: { //
 			birthtype: "Incubation",
 			type: "Herbivore",
 			basefoodrate: 0.001929,
