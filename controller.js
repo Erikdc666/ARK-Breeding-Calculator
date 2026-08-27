@@ -1588,6 +1588,20 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			food: 6000.0
 		},
 		
+		Lumina: { //ASA Dragontopia - cold dragon, warm twin is Umbra
+			birthtype: "Incubation",
+			type: "Carnivore",
+			basefoodrate: 0.000185,
+			babyfoodrate: 13.0,
+			extrababyfoodrate: 3.0,
+			agespeed: 0.000003,
+			agespeedmult: 1.0,
+			eggspeed: 0.005556,
+			eggspeedmult: 1.0,
+			weight: 350.0,
+			food: 1650.0
+		},
+		
 		Lymantria: { //
 			birthtype: "Incubation",
 			type: "Herbivore",
@@ -2545,6 +2559,20 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			food: 3200.0
 		},
 
+		Umbra: { //ASA Dragontopia - warm dragon, cold twin is Lumina
+			birthtype: "Incubation",
+			type: "Carnivore",
+			basefoodrate: 0.000185,
+			babyfoodrate: 13.0,
+			extrababyfoodrate: 3.0,
+			agespeed: 0.000003,
+			agespeedmult: 1.0,
+			eggspeed: 0.005556,
+			eggspeedmult: 1.0,
+			weight: 350.0,
+			food: 1650.0
+		},
+		
 		Velonasaur: { //
 			birthtype: "Incubation",
 			type: "Carnivore",
