@@ -1,4 +1,4 @@
-var breedingController=angular.module('breedingControllers', []).controller('breedingController', ['$scope', '$interval', '$cookies', '$animate', function($scope, $interval, $cookies, $animate) {
+var breedingController=angular.module('breedingControllers', []).controller('breedingController', ['$scope', '$rootScope', '$interval', '$cookies', '$animate', function($scope, $rootScope, $interval, $cookies, $animate) {
 
 	var defaultmult = {
   		get: function(target, name) {
@@ -2712,25 +2712,35 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 	$scope.settings_version = "171114";
 
-	$scope.settings=$cookies.getObject('settings');
-	if ($scope.settings==undefined || $scope.settings.version!=$scope.settings_version) {
-		$scope.settings={
-			version: $scope.settings_version,
-			consumptionspeed: 1,
-			maturationspeed: 1,
-			hatchspeed: 1,
-			baseminfoodrate: 0.000155,
-			lossfactor: 0,
-			troughtype: "Normal",
-			foodrate_time_units: "Minute",
-			gen2hatcheffect: false,
-			gen2growtheffect: false
+	//Rates are server settings, not per-column ones - one page means one set of them, which
+	//is why they are saved to a single cookie. So every instance of this controller has to
+	//hold the *same* settings object, not its own copy built from that cookie: with a copy
+	//each, editing the Mature Multiplier in a creature column left every trough column (and
+	//every other creature column) still computing off the rates as they were at page load.
+	$scope.settings=$rootScope.breedingsettings;
+	if ($scope.settings==undefined) {
+		//First instance on the page: load the cookie, or start from the defaults.
+		$scope.settings=$cookies.getObject('settings');
+		if ($scope.settings==undefined || $scope.settings.version!=$scope.settings_version) {
+			$scope.settings={
+				version: $scope.settings_version,
+				consumptionspeed: 1,
+				maturationspeed: 1,
+				hatchspeed: 1,
+				baseminfoodrate: 0.000155,
+				lossfactor: 0,
+				troughtype: "Normal",
+				foodrate_time_units: "Minute",
+				gen2hatcheffect: false,
+				gen2growtheffect: false
+			}
+			$scope.clearcookies=true;
+			var now=new Date();
+			$cookies.putObject('settings', $scope.settings, {expires: new Date(now.getFullYear(), now.getMonth()+6, now.getDate()), path: '/breeding'});
 		}
-		$scope.clearcookies=true;
-		var now=new Date();
-		$cookies.putObject('settings', $scope.settings, {expires: new Date(now.getFullYear(), now.getMonth()+6, now.getDate()), path: '/breeding'});
+		$rootScope.breedingsettings=$scope.settings;
 	}
-	
+
 	if($scope.settings.stackSize){
 		$scope.foods=$scope.Primfoods;
 	}
@@ -2966,12 +2976,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	}
 	
 	$scope.changeStackSize=function() {
-		if($scope.settings.stackSize){
-			$scope.foods=$scope.Primfoods;
-		} else {
-			$scope.foods=$scope.Defaultfoods;
-		}
-		$scope.troughcalc();
+		//Stack sizes are a server setting like the multipliers, so they save and propagate
+		//the same way - every column switches together, and the choice survives a refresh.
+		$scope.selectsettings();
 	}
 
 	$scope.selectsettings=function() {
@@ -2993,9 +3000,28 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 		var now=new Date();
 		$cookies.putObject('settings', settings, {expires: new Date(now.getFullYear(), now.getMonth()+6, now.getDate()), path: '/breeding'});
-		$scope.statscalc();
-		$scope.troughcalc();
+		$rootScope.$broadcast('settingschanged');
 	}
+
+	//The settings object is shared, but the numbers derived from it are not: each instance
+	//holds its own creature or its own trough. So a change is saved once and announced once,
+	//and every instance recalculates whatever it is showing - including the one that made
+	//the change, which is a child of $rootScope like all the others.
+	$scope.$on('settingschanged', function() {
+		$scope.foods=$scope.settings.stackSize ? $scope.Primfoods : $scope.Defaultfoods;
+		if ($scope.trough) {
+			$scope.troughcalc();
+		} else if ($scope.panel) {
+			//statscalc and everything under it work on the shared creature/creaturedata
+			//variables rather than taking arguments, so point those at this column's
+			//creature first - every other entry point does the same, and without it this
+			//would recompute whichever column was last touched.
+			creature=$scope.creature;
+			creaturedata=$scope.creatures[creature.name];
+			$scope.statscalc();
+		}
+		//The shell instance renders neither panel, so it has nothing to recalculate.
+	});
 
 	/*$scope.selectcreature=function() {
 		creature=$scope.creature;
@@ -3676,8 +3702,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	//Side-by-side creature panels.
 	//
 	//Every instance of this controller is already self-contained - its own creature, its own
-	//settings, its own calculations - so a column is just another instance of it, and the
-	//maths needs no changes at all. ng-repeat puts the panel object on the parent scope, and
+	//calculations - so a column is just another instance of it, and the maths needs no
+	//changes at all. The rates are the one thing they share, since those describe the server
+	//rather than the creature. ng-repeat puts the panel object on the parent scope, and
 	//ng-controller's scope inherits it, which is how an instance tells whether it is a column
 	//(and which one) or the shell that owns the list and the trough panels.
 	var panelskey='breedingpanels:'+storagescope;
@@ -3711,8 +3738,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}, true);
 	} else if ($scope.panel && $scope.panel.name!==undefined && $scope.panel.name in $scope.creatures) {
 		//A column that already knows which creature it was showing. Settings are deliberately
-		//not stored per panel: every instance loads the same settings cookie, so a new column
-		//inherits the current rates, and diverges only if you then edit one of them.
+		//not stored per panel: every instance shares the one settings object, so a new column
+		//opens on the current rates and follows them from then on.
 		$scope.creature={name: $scope.panel.name, maturationprogress: 0};
 	}
 
