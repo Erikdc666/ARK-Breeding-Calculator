@@ -890,9 +890,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			food: 450
 		},
 
-		Cosmo: { //
+		Cosmo: { //Carnivore, not Sinomacrops: Chitin is Resource-type and Cosmo lacks the TamedDinoForceConsiderFoodTypes whitelist Sino/Archa have, so troughs and nursing never feed it Chitin
 			birthtype: "Incubation",
-			type: "Sinomacrops",
+			type: "Carnivore",
 			basefoodrate: 0.000868,
 			babyfoodrate: 25.5,
 			extrababyfoodrate: 20.0,
