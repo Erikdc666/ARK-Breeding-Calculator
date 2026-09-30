@@ -3496,7 +3496,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	//    included (raw meat has priority 3, everything else here 1). So for the same food the
 	//    trough is eaten first; the Maeguana only wins when its boosted item is still smaller
 	//  - it eats once it is missing at least one whole item, so bigger items just mean
-	//    bigger, rarer bites - the food value it gets is the boosted one
+	//    bigger, rarer bites - the food value it gets is the boosted one. If one item is
+	//    worth more than the baby's whole cap, it eats under half full and the excess is
+	//    lost when the baby-age update clamps food back to the cap (every 4-64 s)
 	//The Maeguana's own eating from its inventory is not modelled (an adult on 0.01/s, well
 	//under one raw meat an hour).
 	var foodpriority={'Raw Meat': 3, 'Raw Fish Meat': 3};
@@ -3600,6 +3602,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				newcreature.foodratedecay=(newcreature.maxfoodrate-newcreature.minfoodrate)/newcreature.maturationtime;
 				newcreature.foodrate=newcreature.maxfoodrate-newcreature.foodratedecay*newcreature.maturation*newcreature.maturationtime;
 				newcreature.hunger=-validatenumber(creaturelist[i].currentfood, 0, 10000000); //Its own Food stat is eaten before anything in the trough
+				newcreature.adultfood=$scope.creatures[name].food;
 				newcreature.foods=$scope.foodlists[$scope.creatures[name].type];
 				newcreature.foodmultipliers=$scope.creatures[name].foodmultipliers;
 				newcreature.wastemultipliers=$scope.creatures[name].wastemultipliers;
@@ -3712,13 +3715,27 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				if (currentstack>-1) {
 					foodmult=simcreature.foodmultipliers[stacks[currentstack]['type']]*currentmult;
 					wastemult=simcreature.wastemultipliers[stacks[currentstack]['type']];
-					if (stacks[currentstack]['food']*foodmult<simcreature.hunger) {
+					//One item worth more than the baby can hold at all (a small baby on a boosted
+					//Maeguana item): the game eats it once the baby is under half full. The food
+					//is only clamped to the ADULT max on eating, then cut back to the baby's cap
+					//by the next baby-age update (every 4-64 s) - that snap-back is lost food.
+					var gain=stacks[currentstack]['food']*foodmult;
+					var overflow=0;
+					var fits=gain<simcreature.hunger;
+					if (!fits) {
+						var cap=babyfoodcapacity(simcreature.adultfood, Math.min(1, simcreature.maturation+time/simcreature.maturationtime));
+						if (gain>cap && simcreature.hunger>0.5*cap) {
+							fits=true;
+							overflow=gain-simcreature.hunger;
+						}
+					}
+					if (fits) {
 						times[$scope.creatures[simcreature.name].type]=time;
 						stacks[currentstack]['stacksize']--;
 						eatenfood++;
-						eatenpoints+=stacks[currentstack]['food']*foodmult;
-						wastedpoints+=stacks[currentstack]['waste']*wastemult;
-						simcreature.hunger-=stacks[currentstack]['food']*foodmult;
+						eatenpoints+=gain-overflow;
+						wastedpoints+=stacks[currentstack]['waste']*wastemult+overflow;
+						simcreature.hunger-=gain-overflow;
 						if (stacks[currentstack]['stacksize']==0) {
 							totalstacks['all']--;
 							totalstacks[stacks[currentstack]['type']]--;
