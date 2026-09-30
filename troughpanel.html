@@ -2,46 +2,46 @@
 	<div class="tableslide" ng-show="tablevisibility['Trough']">
 	<table>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Prim+ Stacksizes:<span class="tooltiptext">Check this if you are on Prim+ using the old stack sizes</span></td>
+			<td style="width: 36%" class="label tooltip">Prim+ Stacksizes:<span class="tooltiptext">Check this if you are on Prim+ using the old stack sizes</span></td>
 			<td><input ng-model="settings.stackSize" ng-change="changeStackSize()" type="checkbox"></td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Trough Type:<span class="tooltiptext">Sets the spoil rate of the food based on the container you will use, Tek=100x, Normal=4x, Clicker=1x</span></td>
+			<td style="width: 36%" class="label tooltip">Trough Type:<span class="tooltiptext">Sets the spoil rate of the food based on the container you will use, Tek=100x, Normal=4x, Clicker=1x</span></td>
 			<td><select ng-options="type as type for (type, multi) in troughtypes" ng-model="settings.troughtype" ng-change="selectsettings()"></select></td>
 		</tr>
 		<tr>
 			<td colspan="2" class="label" style="text-align: center; padding-top: 6px">In the {{settings.troughtype}} trough</td>
 		</tr>
 		<tr ng-repeat="(food, stacks) in troughstacks">
-			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the trough. Spoils at the trough's rate, no Maeguana bonus</span></td>
-			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip" ng-style="{color: requirementcolor('trough', food)}">{{requirementtext('trough', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time)</span></span></td>
+			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the trough. Spoils at the trough's rate, no Maeguana bonus</span></td>
+			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('trough', food)}">{{requirementtext('trough', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time)</span></span></td>
 		</tr>
 		<tr>
 			<td colspan="2" class="label tooltip" style="text-align: center; padding-top: 6px">In a nursing Maeguana<span class="tooltiptext">A Maeguana or Maewing with Nursing on, next to the trough. Leave its stacks at 0 if you have none. Babies (up to 100%) get 1.01^Food points out of every item they take from it. Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies eat from the trough first. Its inventory spoils at the normal 1x rate</span></td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Food points:<span class="tooltiptext">The Maeguana's wild + tamed + mutation levels in Food</span></td>
+			<td style="width: 36%" class="label tooltip">Food points:<span class="tooltiptext">The Maeguana's wild + tamed + mutation levels in Food</span></td>
 			<td><input ng-model="maeguana.points" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0"> &times;{{maeguanamultiplier(maeguana) | number:2}}</td>
 		</tr>
 		<tr ng-repeat="(food, stacks) in maeguana.stacks">
-			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana's inventory</span></td>
-			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip" ng-style="{color: requirementcolor('maeguana', food)}">{{requirementtext('maeguana', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time)</span></span></td>
+			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana's inventory</span></td>
+			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('maeguana', food)}">{{requirementtext('maeguana', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time)</span></span></td>
 		</tr>
 		<tr ng-repeat="(type, time) in troughdata.times">
-			<td style="width: 50%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>
+			<td style="width: 36%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>
 			<td>{{time | secondsToDateTime}}</td>
 		</tr>
 		<tr ng-repeat="starve in troughdata.starving">
-			<td style="width: 50%; color: #ff8a80" class="label tooltip">&#9888; {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> starves<span class="tooltiptext">Its Food hits 0 at {{starve.maturation*100 | number:1}}% maturation, assuming nobody hand-feeds. Under 10% a baby can only eat from the Maeguana, never the trough</span></td>
+			<td style="width: 36%; color: #ff8a80" class="label tooltip">&#9888; {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> starves<span class="tooltiptext">Its Food hits 0 at {{starve.maturation*100 | number:1}}% maturation, assuming nobody hand-feeds. Under 10% a baby can only eat from the Maeguana, never the trough</span></td>
 			<td style="color: #ff8a80">in {{starve.time | secondsToDateTime}} ({{starve.maturation*100 | number:1}}%)</td>
 		</tr>
 		<tr ng-show="troughdata.starving && troughdata.starving.length==0 && creaturelist.length>0">
-			<td style="width: 50%" class="label">Starvation</td>
+			<td style="width: 36%" class="label">Starvation</td>
 			<td>None - every baby reaches adult</td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Loss<span class="tooltiptext">Amount of food points to spoilage, cooking meat is automatic 50% loss</span></td>
-			<td>{{(troughdata.spoiledpoints+troughdata.wastedpoints)/troughdata.totalpoints*100}}%</td>
+			<td style="width: 36%" class="label tooltip">Loss<span class="tooltiptext">Amount of food points to spoilage, cooking meat is automatic 50% loss</span></td>
+			<td>{{(troughdata.spoiledpoints+troughdata.wastedpoints)/troughdata.totalpoints*100 | number:1}}%</td>
 		</tr>
 	</table>
 	</div>

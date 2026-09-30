@@ -278,11 +278,14 @@
 			opacity: 0.85;
 		}
 
-		/* Trough columns are a little wider than creature columns: the food table carries a
-		   number input on every row. */
+		/* Trough columns are wider than creature columns: every food row carries a number
+		   input plus its "(requires N, +M)" note, which should stay on one line. */
 		.troughcolumn {
-			flex: 0 0 460px;
-			min-width: 460px;
+			flex: 0 0 620px;
+			min-width: 620px;
+		}
+		.requirement {
+			white-space: nowrap;
 		}
 		.troughhandle {
 			cursor: move;
@@ -292,6 +295,6 @@
 			text-overflow: ellipsis;
 		}
 		.troughrow .panelplaceholder {
-			flex: 0 0 460px;
-			min-width: 460px;
+			flex: 0 0 620px;
+			min-width: 620px;
 		}
