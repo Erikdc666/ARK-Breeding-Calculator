@@ -3611,6 +3611,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				newcreature.foodrate=newcreature.maxfoodrate-newcreature.foodratedecay*newcreature.maturation*newcreature.maturationtime;
 				newcreature.hunger=-validatenumber(creaturelist[i].currentfood, 0, 10000000); //Its own Food stat is eaten before anything in the trough
 				newcreature.adultfood=$scope.creatures[name].food;
+				newcreature.row=i; //Which creature row it came from, for the starvation report
+				newcreature.starvedat=-1;
+				newcreature.snapwait=0;
 				newcreature.foods=$scope.foodlists[$scope.creatures[name].type];
 				newcreature.foodmultipliers=$scope.creatures[name].foodmultipliers;
 				newcreature.wastemultipliers=$scope.creatures[name].wastemultipliers;
@@ -3672,9 +3675,19 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					}
 					continue; //Still living off its own Food stat, nothing taken from the trough
 				}
+				if (simcreature.starvedat>=0) {
+					continue; //Starved, eats nothing more
+				}
+				if (simcreature.snapwait>0) {
+					simcreature.snapwait--;
+					continue; //Overfilled past its cap, living off that until the snap-back
+				}
 				simcreature.hunger+=simcreature.foodrate;
 
-				if (simcreature.hunger<20) {
+				//Hunger is how far below full it is; checked after this tick's meal (below).
+				var cap=babyfoodcapacity(simcreature.adultfood, Math.min(1, simcreature.maturation+time/simcreature.maturationtime));
+
+				if (simcreature.hunger<20 && simcreature.hunger<cap) {
 					continue; //Creature cannot possibly eat below this
 				}
 
@@ -3682,9 +3695,10 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				//grouped by type in foodorder, so the first edible stack is the nearest of the
 				//per-type cursors - a few comparisons rather than a scan from 0. Under 10%
 				//maturation a baby cannot use a trough at all, only the Maeguana. Applied only
-				//when the Maeguana holds food: without it the calculator's convention is that under-10%
+				//from the trough panel, which always passes its Maeguana: the buffer estimates call
+				//this without one and keep the calculator's convention that under-10%
 				//babies are hand-fed, and the buffer estimates rely on that.
-				var troughok=!hasmaeguana || simcreature.maturation+time/simcreature.maturationtime>=0.1;
+				var troughok=maeguana===undefined || simcreature.maturation+time/simcreature.maturationtime>=0.1;
 				var troughstack=-1, nursestack=-1, nursetype=null;
 				for (var k=0;k<simcreature.eats.length;k++) {
 					var stacktype=simcreature.eats[k];
@@ -3729,9 +3743,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					//by the next baby-age update (every 4-64 s) - that snap-back is lost food.
 					var gain=stacks[currentstack]['food']*foodmult;
 					var overflow=0;
-					var fits=gain<simcreature.hunger;
+					var fits=gain<=simcreature.hunger;
 					if (!fits) {
-						var cap=babyfoodcapacity(simcreature.adultfood, Math.min(1, simcreature.maturation+time/simcreature.maturationtime));
 						if (gain>cap && simcreature.hunger>0.5*cap) {
 							fits=true;
 							overflow=gain-simcreature.hunger;
@@ -3744,11 +3757,20 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 						eatenpoints+=gain-overflow;
 						wastedpoints+=stacks[currentstack]['waste']*wastemult+overflow;
 						simcreature.hunger-=gain-overflow;
+						if (overflow>0) {
+							//Until the baby-age update cuts it back (4 s + 0-60 s random, 34 s
+							//on average) it sits above its cap and is not hungry at all.
+							simcreature.snapwait=34;
+						}
 						if (stacks[currentstack]['stacksize']==0) {
 							totalstacks['all']--;
 							totalstacks[stacks[currentstack]['type']]--;
 						}
 					}
+				}
+				//Still empty after trying to eat: its Food is at 0. Nobody is assumed to hand-feed.
+				if (simcreature.hunger>=cap) {
+					simcreature.starvedat=time;
 				}
 			}
 
@@ -3779,7 +3801,43 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 		}
 
+		//Who starves, per creature row. Babies still alive when the food runs out would starve
+		//afterwards too: step them on (a minute at a time is plenty) until they either grow up
+		//or hit empty, so the report covers them as well.
+		var starving=[];
+		for (i=0;i<troughcreatures.length;i++) {
+			var c=troughcreatures[i];
+			if (c.starvedat<0) {
+				var t=time, hunger=Math.max(0, c.hunger), rate=c.foodrate;
+				while (rate>=c.minfoodrate && t<60*60*24*30) {
+					hunger+=rate*60;
+					rate-=c.foodratedecay*60;
+					t+=60;
+					if (hunger>=babyfoodcapacity(c.adultfood, Math.min(1, c.maturation+t/c.maturationtime))) {
+						c.starvedat=t;
+						break;
+					}
+				}
+			}
+			if (c.starvedat<0) {
+				continue;
+			}
+			var row=null;
+			for (var k=0;k<starving.length;k++) {
+				if (starving[k].row==c.row) row=starving[k];
+			}
+			if (row) {
+				row.count++;
+				row.time=Math.min(row.time, c.starvedat);
+			} else {
+				starving.push({row: c.row, name: c.name, count: 1, time: c.starvedat,
+					maturation: Math.min(1, c.maturation+c.starvedat/c.maturationtime)});
+			}
+		}
+		starving.sort(function(a, b) { return a.time-b.time; });
+
 		output={
+			starving: starving,
 			time: time,
 			times: times,
 			totalfood: eatenfood+spoiledfood,

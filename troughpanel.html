@@ -31,6 +31,14 @@
 			<td style="width: 50%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>
 			<td>{{time | secondsToDateTime}}</td>
 		</tr>
+		<tr ng-repeat="starve in troughdata.starving">
+			<td style="width: 50%; color: #ff8a80" class="label tooltip">&#9888; {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> starves<span class="tooltiptext">Its Food hits 0 at {{starve.maturation*100 | number:1}}% maturation, assuming nobody hand-feeds. Under 10% a baby can only eat from the Maeguana, never the trough</span></td>
+			<td style="color: #ff8a80">in {{starve.time | secondsToDateTime}} ({{starve.maturation*100 | number:1}}%)</td>
+		</tr>
+		<tr ng-show="troughdata.starving && troughdata.starving.length==0 && creaturelist.length>0">
+			<td style="width: 50%" class="label">Starvation</td>
+			<td>None - every baby reaches adult</td>
+		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Loss<span class="tooltiptext">Amount of food points to spoilage, cooking meat is automatic 50% loss</span></td>
 			<td>{{(troughdata.spoiledpoints+troughdata.wastedpoints)/troughdata.totalpoints*100}}%</td>
