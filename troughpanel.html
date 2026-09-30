@@ -14,7 +14,7 @@
 		</tr>
 		<tr ng-repeat="(food, stacks) in troughstacks">
 			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the trough. Spoils at the trough's rate, no Maeguana bonus</span></td>
-			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks</td>
+			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip" ng-style="{color: requirementcolor('trough', food)}">{{requirementtext('trough', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time)</span></span></td>
 		</tr>
 		<tr>
 			<td colspan="2" class="label tooltip" style="text-align: center; padding-top: 6px">In a nursing Maeguana<span class="tooltiptext">A Maeguana or Maewing with Nursing on, next to the trough. Leave its stacks at 0 if you have none. Babies (up to 100%) get 1.01^Food points out of every item they take from it. Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies eat from the trough first. Its inventory spoils at the normal 1x rate</span></td>
@@ -25,7 +25,7 @@
 		</tr>
 		<tr ng-repeat="(food, stacks) in maeguana.stacks">
 			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana's inventory</span></td>
-			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks</td>
+			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip" ng-style="{color: requirementcolor('maeguana', food)}">{{requirementtext('maeguana', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time)</span></span></td>
 		</tr>
 		<tr ng-repeat="(type, time) in troughdata.times">
 			<td style="width: 50%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>

@@ -3484,6 +3484,106 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 	$scope.troughcalc=function() {
 		$scope.troughdata=$scope.troughsim($scope.creaturelist, $scope.troughstacks, $scope.troughtypes[$scope.settings.troughtype], $scope.maeguana);
+		$scope.requirementscalc();
+	}
+
+	//"Requires N stacks" next to every food field: with every other field as it is, the
+	//fewest stacks of this food in this container for which no baby starves before adult.
+	//Found by search over full sims, so it runs in the background one field per step and a
+	//newer edit abandons an older run.
+	$scope.requirements={trough: {}, maeguana: {}};
+	var requirementsrun=0;
+
+	$scope.requirementtext=function(source, food) {
+		var r=$scope.requirements[source][food];
+		if (!r) return '';
+		if (r.pending) return '(checking...)';
+		if (r.never) return '(not enough on its own)';
+		if (r.need==0) return r.current>0 ? '(not needed)' : '(none needed)';
+		if (r.current>=r.need) return '(enough, needs '+r.need+')';
+		return '(requires '+r.need+', +'+Math.ceil(r.need-r.current)+')';
+	}
+
+	$scope.requirementcolor=function(source, food) {
+		var r=$scope.requirements[source][food];
+		if (!r || r.pending || r.need==0) return '';
+		if (r.never || r.current<r.need) return '#ff8a80';
+		return '#b9f6ca';
+	}
+
+	$scope.requirementscalc=function() {
+		var run=++requirementsrun;
+		var fields=[];
+		var sources={trough: $scope.troughstacks, maeguana: $scope.maeguana.stacks};
+		$scope.requirements={trough: {}, maeguana: {}};
+		if (!$scope.creaturelist.length) {
+			return;
+		}
+		for (var source in sources) {
+			for (var food in sources[source]) {
+				fields.push({source: source, food: food});
+				$scope.requirements[source][food]={pending: true};
+			}
+		}
+		var creaturelist=angular.copy($scope.creaturelist);
+		var troughstacks=angular.copy($scope.troughstacks);
+		var maeguana=angular.copy($scope.maeguana);
+		var troughmultiplier=$scope.troughtypes[$scope.settings.troughtype];
+
+		function survives(source, food, amount) {
+			var tr=angular.copy(troughstacks), mg=angular.copy(maeguana);
+			(source=='trough' ? tr : mg.stacks)[food]=amount;
+			//Only the babies this field can feed: ones that eat this food, and for a trough
+			//field only from 10% on - under that they cannot reach it, which is the Maeguana's
+			//job (and shows in the starvation lines).
+			return $scope.troughsim(creaturelist, tr, troughmultiplier, mg, {survival: true, counts: function(c, maturation) {
+				return c.foods.indexOf(food)>-1 && (source=='maeguana' || maturation>=0.1);
+			}}).starving.length==0;
+		}
+
+		function solve(field) {
+			var current=(field.source=='trough' ? troughstacks : maeguana.stacks)[field.food] || 0;
+			var lo, hi;
+			if (survives(field.source, field.food, current)) {
+				if (current<=0) {
+					return {need: 0, current: current};
+				}
+				lo=-1; hi=Math.ceil(current); //Enough already: how low could it go?
+			} else {
+				lo=Math.floor(current); hi=Math.max(1, Math.ceil(current)*2);
+				while (!survives(field.source, field.food, hi)) {
+					lo=hi;
+					hi*=2;
+					if (hi>20000) {
+						return {never: true, current: current}; //This food alone cannot save them
+					}
+				}
+			}
+			while (hi-lo>1) {
+				var mid=Math.floor((lo+hi)/2);
+				if (mid>=0 && survives(field.source, field.food, mid)) {
+					hi=mid;
+				} else {
+					lo=mid;
+				}
+			}
+			return {need: hi, current: current};
+		}
+
+		var index=0;
+		function step() {
+			if (run!=requirementsrun || index>=fields.length) {
+				return;
+			}
+			var field=fields[index++];
+			var result=solve(field);
+			if (run!=requirementsrun) {
+				return;
+			}
+			$scope.requirements[field.source][field.food]=result;
+			$interval(step, 0, 1); //Next field on a fresh tick, so the page stays responsive
+		}
+		$interval(step, 0, 1);
 	}
 
 	//A nursing Maeguana (or Maewing) next to the trough. Babies eat from its inventory like
@@ -3510,7 +3610,17 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		return Math.pow(1.01, maeguana.points);
 	}
 
-	$scope.troughsim=function(creaturelist, troughstacks, troughmultiplier, maeguana) {
+	//opts.survival: only answer "does anyone starve" - stop at the first starvation.
+	//opts.counts(creature, maturation): whether a starvation there counts. One that does not
+	//is treated as fed from elsewhere - it stays alive at empty and keeps eating later.
+	$scope.troughsim=function(creaturelist, troughstacks, troughmultiplier, maeguana, opts) {
+		opts=opts || {};
+		//All locals. They used to be implicit globals, which made the per-second loop below
+		//several times slower (and let it clobber callers' loop counters).
+		var i, j, time, foodorder, troughcreatures, stacks, totalstacks, times, foodname, fullstacks,
+			partialstack, lastofthistype, name, newcreature, reserves, spoiledpoints, spoiledfood,
+			eatenpoints, eatenfood, wastedpoints, hunger, currentstack, currentmult, foodmult,
+			wastemult, output;
 		$scope.iterations++;
 		foodorder=$scope.foodorder;
 		troughcreatures=[];
@@ -3653,7 +3763,11 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			if (stacktypes[i].next<nextspoil) nextspoil=stacktypes[i].next;
 		}
 
-		while ((totalstacks['all']>0 || reserves>0) && time<60*60*24*3) {
+		//The panel follows every baby to adult (up to 30 days); the buffer estimates keep the
+		//original 3-day horizon.
+		var horizon=maeguana===undefined ? 60*60*24*3 : 60*60*24*30;
+		var anystarved=false;
+		while ((totalstacks['all']>0 || reserves>0) && time<horizon && !(opts.survival && anystarved)) {
 			time++;
 
 			for (i=0;i<troughcreatures.length;i++) {
@@ -3758,9 +3872,10 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 						wastedpoints+=stacks[currentstack]['waste']*wastemult+overflow;
 						simcreature.hunger-=gain-overflow;
 						if (overflow>0) {
-							//Until the baby-age update cuts it back (4 s + 0-60 s random, 34 s
-							//on average) it sits above its cap and is not hungry at all.
-							simcreature.snapwait=34;
+							//Until the baby-age update cuts it back (4 s + 0-60 s random) it sits
+							//above its cap and is not hungry. Count only the 4 s minimum: the roll
+							//can come up short every time, so plan for the worst case.
+							simcreature.snapwait=4;
 						}
 						if (stacks[currentstack]['stacksize']==0) {
 							totalstacks['all']--;
@@ -3770,7 +3885,12 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				}
 				//Still empty after trying to eat: its Food is at 0. Nobody is assumed to hand-feed.
 				if (simcreature.hunger>=cap) {
-					simcreature.starvedat=time;
+					if (opts.counts && !opts.counts(simcreature, simcreature.maturation+time/simcreature.maturationtime)) {
+						simcreature.hunger=cap;
+					} else {
+						simcreature.starvedat=time;
+						anystarved=true;
+					}
 				}
 			}
 
@@ -3813,7 +3933,12 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					hunger+=rate*60;
 					rate-=c.foodratedecay*60;
 					t+=60;
-					if (hunger>=babyfoodcapacity(c.adultfood, Math.min(1, c.maturation+t/c.maturationtime))) {
+					var capnow=babyfoodcapacity(c.adultfood, Math.min(1, c.maturation+t/c.maturationtime));
+					if (hunger>=capnow) {
+						if (opts.counts && !opts.counts(c, c.maturation+t/c.maturationtime)) {
+							hunger=capnow;
+							continue;
+						}
 						c.starvedat=t;
 						break;
 					}
@@ -3849,8 +3974,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			wastedpoints: wastedpoints
 		}
 
-		var now=new Date();
-		$scope.savetrough();
+		if (!opts.survival) {
+			$scope.savetrough();
+		}
 
 		return output;
 	}
@@ -3920,5 +4046,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		$scope.selectweight(); //Recalculates everything off the restored values
 	}
 	$scope.troughupdatefoodtypes();
+	if ($scope.trough) {
+		$scope.troughcalc(); //Show results straight away, not only after the first edit
+	}
 
 }]);
