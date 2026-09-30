@@ -9,16 +9,22 @@
 			<td style="width: 50%" class="label tooltip">Trough Type:<span class="tooltiptext">Sets the spoil rate of the food based on the container you will use, Tek=100x, Normal=4x, Clicker=1x</span></td>
 			<td><select ng-options="type as type for (type, multi) in troughtypes" ng-model="settings.troughtype" ng-change="selectsettings()"></select></td>
 		</tr>
+		<tr>
+			<td colspan="2" class="label" style="text-align: center; padding-top: 6px">In the {{settings.troughtype}} trough</td>
+		</tr>
 		<tr ng-repeat="(food, stacks) in troughstacks">
-			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in troughs</span></td>
+			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the trough. Spoils at the trough's rate, no Maeguana bonus</span></td>
 			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks</td>
 		</tr>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Maeguana Food points:<span class="tooltiptext">A nursing Maeguana or Maewing by the trough: its wild + tamed + mutation levels in Food. Every item a baby takes from it is worth 1.01^points as much (babies up to 100%, Nursing on). Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies still eat from the trough first. 0 = no Maeguana</span></td>
-			<td><input ng-model="maeguana.points" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0"> <span ng-show="maeguana.points>0">&times;{{maeguanamultiplier(maeguana) | number:2}}</span></td>
+			<td colspan="2" class="label tooltip" style="text-align: center; padding-top: 6px">In a nursing Maeguana<span class="tooltiptext">A Maeguana or Maewing with Nursing on, next to the trough. Leave its stacks at 0 if you have none. Babies (up to 100%) get 1.01^Food points out of every item they take from it. Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies eat from the trough first. Its inventory spoils at the normal 1x rate</span></td>
 		</tr>
-		<tr ng-repeat="(food, stacks) in maeguana.stacks" ng-show="maeguana.points>0">
-			<td style="width: 50%" class="label tooltip">{{food}} (Maeguana)<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana's inventory. Spoils at the normal 1x rate</span></td>
+		<tr>
+			<td style="width: 50%" class="label tooltip">Food points:<span class="tooltiptext">The Maeguana's wild + tamed + mutation levels in Food</span></td>
+			<td><input ng-model="maeguana.points" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0"> &times;{{maeguanamultiplier(maeguana) | number:2}}</td>
+		</tr>
+		<tr ng-repeat="(food, stacks) in maeguana.stacks">
+			<td style="width: 50%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana's inventory</span></td>
 			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks</td>
 		</tr>
 		<tr ng-repeat="(type, time) in troughdata.times">

@@ -3531,9 +3531,17 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		var stacktypes=[];
 		//Trough stacks first, then the Maeguana's, so for the same food the trough's run has
 		//the lower index. A dino inventory spoils at the normal 1x rate.
+		//A Maeguana counts as soon as it holds food, even at 0 Food points (x1): the 10%
+		//rule and its own spoil rate still apply.
 		var nursemult=$scope.maeguanamultiplier(maeguana);
+		var hasmaeguana=false;
+		if (maeguana && maeguana.stacks) {
+			for (var food in maeguana.stacks) {
+				if (maeguana.stacks[food]>0) hasmaeguana=true;
+			}
+		}
 		addstacks(troughstacks, troughmultiplier, false, 1);
-		if (nursemult>1) {
+		if (hasmaeguana) {
 			addstacks(maeguana.stacks, 1, true, nursemult);
 		}
 		function addstacks(stackmap, spoilmult, nursing, mult) {
@@ -3674,9 +3682,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				//grouped by type in foodorder, so the first edible stack is the nearest of the
 				//per-type cursors - a few comparisons rather than a scan from 0. Under 10%
 				//maturation a baby cannot use a trough at all, only the Maeguana. Applied only
-				//when there is one: without it the calculator's convention is that under-10%
+				//when the Maeguana holds food: without it the calculator's convention is that under-10%
 				//babies are hand-fed, and the buffer estimates rely on that.
-				var troughok=nursemult==1 || simcreature.maturation+time/simcreature.maturationtime>=0.1;
+				var troughok=!hasmaeguana || simcreature.maturation+time/simcreature.maturationtime>=0.1;
 				var troughstack=-1, nursestack=-1, nursetype=null;
 				for (var k=0;k<simcreature.eats.length;k++) {
 					var stacktype=simcreature.eats[k];
