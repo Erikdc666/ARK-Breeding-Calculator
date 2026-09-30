@@ -3498,7 +3498,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		var r=$scope.requirements[source][food];
 		if (!r) return '';
 		if (r.pending) return '(checking...)';
-		if (r.never) return '(not enough on its own)';
+		if (r.never) return '(spoils too fast)'; //Even 20000 stacks run out: every stack spoils away before they grow up
 		if (r.need==0) return r.current>0 ? '(not needed)' : '(none needed)';
 		if (r.current>=r.need) return '(enough, needs '+r.need+')';
 		return '(requires '+r.need+', +'+Math.ceil(r.need-r.current)+')';
@@ -3589,7 +3589,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					lo=hi;
 					hi*=2;
 					if (hi>20000) {
-						return {never: true, current: current}; //This food alone cannot save them
+						return {never: true, current: current}; //Spoils too fast: no amount of this food here lasts
 					}
 				}
 			}
