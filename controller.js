@@ -2876,7 +2876,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			$scope.troughs.push({
 				name: 'Trough '+($scope.troughs.length+1),
 				creaturelist: [],
-				troughstacks: emptystacks()
+				troughstacks: emptystacks(),
+				maeguana: {points: 0, stacks: emptystacks()}
 			});
 		}
 
@@ -2910,8 +2911,15 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		if (!$scope.trough.troughstacks) {
 			$scope.trough.troughstacks=emptystacks();
 		}
+		if (!$scope.trough.maeguana) {
+			$scope.trough.maeguana={points: 0, stacks: emptystacks()};
+		}
 		$scope.creaturelist=$scope.trough.creaturelist;
 		$scope.troughstacks=$scope.trough.troughstacks;
+		$scope.maeguana=$scope.trough.maeguana;
+	}
+	if (!$scope.maeguana) {
+		$scope.maeguana={points: 0, stacks: emptystacks()};
 	}
 
 	$scope.savetrough=function() {
@@ -2920,6 +2928,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		if ($scope.trough) {
 			$scope.trough.creaturelist=$scope.creaturelist;
 			$scope.trough.troughstacks=$scope.troughstacks;
+			$scope.trough.maeguana=$scope.maeguana;
 		}
 	}
 
@@ -3456,24 +3465,50 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				activefoodtypes.add(creaturefoodlist[j]);
 			}
 		}
-		var newstacklist={};
-		for (var i in $scope.foodlist) {
-			if (activefoodtypes.has($scope.foodlist[i])) {
-				if ($scope.troughstacks[$scope.foodlist[i]]!=undefined) {
-					newstacklist[$scope.foodlist[i]]=$scope.troughstacks[$scope.foodlist[i]];
-				} else {
-					newstacklist[$scope.foodlist[i]]=0;
+		function keepactive(stacklist) {
+			var newstacklist={};
+			for (var i in $scope.foodlist) {
+				if (activefoodtypes.has($scope.foodlist[i])) {
+					if (stacklist && stacklist[$scope.foodlist[i]]!=undefined) {
+						newstacklist[$scope.foodlist[i]]=stacklist[$scope.foodlist[i]];
+					} else {
+						newstacklist[$scope.foodlist[i]]=0;
+					}
 				}
 			}
+			return newstacklist;
 		}
-		$scope.troughstacks=newstacklist;
+		$scope.troughstacks=keepactive($scope.troughstacks);
+		$scope.maeguana.stacks=keepactive($scope.maeguana.stacks);
 	}
 
 	$scope.troughcalc=function() {
-		$scope.troughdata=$scope.troughsim($scope.creaturelist, $scope.troughstacks, $scope.troughtypes[$scope.settings.troughtype]);
+		$scope.troughdata=$scope.troughsim($scope.creaturelist, $scope.troughstacks, $scope.troughtypes[$scope.settings.troughtype], $scope.maeguana);
 	}
 
-	$scope.troughsim=function(creaturelist, troughstacks, troughmultiplier) {
+	//A nursing Maeguana (or Maewing) next to the trough. Babies eat from its inventory like
+	//from a trough, but every item is worth 1.01^(Food points) as much: wild + tamed +
+	//mutation levels in its Food stat. Decoded from ArkAscendedServer.exe, 2026-09-30:
+	//  - the boost is applied when the item is eaten, only while the eater is still a baby
+	//    (that includes juvenile and adolescent - anything under 100%), and only with Nursing on
+	//  - under 10% a baby ignores troughs entirely; the Maeguana is all it can reach
+	//  - an auto-eating baby takes the item with the LOWEST food value / priority, boost
+	//    included (raw meat has priority 3, everything else here 1). So for the same food the
+	//    trough is eaten first; the Maeguana only wins when its boosted item is still smaller
+	//  - it eats once it is missing at least one whole item, so bigger items just mean
+	//    bigger, rarer bites - the food value it gets is the boosted one
+	//The Maeguana's own eating from its inventory is not modelled (an adult on 0.01/s, well
+	//under one raw meat an hour).
+	var foodpriority={'Raw Meat': 3, 'Raw Fish Meat': 3};
+
+	$scope.maeguanamultiplier=function(maeguana) {
+		if (!maeguana || !(maeguana.points>0)) {
+			return 1;
+		}
+		return Math.pow(1.01, maeguana.points);
+	}
+
+	$scope.troughsim=function(creaturelist, troughstacks, troughmultiplier, maeguana) {
 		$scope.iterations++;
 		foodorder=$scope.foodorder;
 		troughcreatures=[];
@@ -3492,22 +3527,30 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		//type owns one contiguous run - that is what lets the loops below skip whole
 		//regions instead of walking every stack on every tick.
 		var stacktypes=[];
-		for (i=0; i<foodorder.length; i++) {
-			foodname=foodorder[i];
-			if (troughstacks[foodname]===undefined) {
+		//Trough stacks first, then the Maeguana's, so for the same food the trough's run has
+		//the lower index. A dino inventory spoils at the normal 1x rate.
+		var nursemult=$scope.maeguanamultiplier(maeguana);
+		addstacks(troughstacks, troughmultiplier, false, 1);
+		if (nursemult>1) {
+			addstacks(maeguana.stacks, 1, true, nursemult);
+		}
+		function addstacks(stackmap, spoilmult, nursing, mult) {
+		for (var i=0; i<foodorder.length; i++) {
+			var foodname=foodorder[i];
+			if (!(stackmap[foodname]>0)) {
 				continue;
 			}
-			totalstacks['all']+=Math.ceil(troughstacks[foodname]);
-			totalstacks[foodname]=Math.ceil(troughstacks[foodname]);
-			fullstacks=Math.floor(troughstacks[foodname]);
-			partialstack=(troughstacks[foodname]-fullstacks);
+			totalstacks['all']+=Math.ceil(stackmap[foodname]);
+			totalstacks[foodname]=(totalstacks[foodname] || 0)+Math.ceil(stackmap[foodname]);
+			var fullstacks=Math.floor(stackmap[foodname]);
+			var partialstack=(stackmap[foodname]-fullstacks);
 			var typefirst=stacks.length;
-			for (j=0; j<troughstacks[foodname]; j++) {
+			for (var j=0; j<stackmap[foodname]; j++) {
 				stacks.push({
 					"type": foodname, //Name of this food
 					"stacksize": $scope.foods[foodname].stack, //Size of this stack
-					"stackspoil": $scope.foods[foodname].spoil*troughmultiplier, //Actual spoil timer that decrements for this stack (variable)
-					"foodspoil": $scope.foods[foodname].spoil*troughmultiplier, //Spoil time for this food in general (constant)
+					"stackspoil": $scope.foods[foodname].spoil*spoilmult, //Actual spoil timer that decrements for this stack (variable)
+					"foodspoil": $scope.foods[foodname].spoil*spoilmult, //Spoil time for this food in general (constant)
 					"food": $scope.foods[foodname].food, //Food provided
 					"waste": $scope.foods[foodname].waste}); //Waste (eg cooked meat wastes 25 because cooking turns 50 food into 25)
 			}
@@ -3515,7 +3558,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				//The partial stack is the last stack of THIS food type, which is the last
 				//one pushed - not stacks[j-1], since j counts within the type while stacks
 				//accumulates across all of them.
-				lastofthistype=stacks.length-1;
+				var lastofthistype=stacks.length-1;
 				stacks[lastofthistype]['stacksize']=Math.floor(stacks[lastofthistype]['stacksize']*partialstack);
 				if (stacks[lastofthistype]['stacksize']==0) {
 					totalstacks[foodname]--;
@@ -3531,11 +3574,14 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					first: typefirst,
 					last: stacks.length-1,
 					cursor: typefirst, //First stack of this type that still has food in it
-					period: Math.ceil($scope.foods[foodname].spoil*troughmultiplier),
-					next: Math.ceil($scope.foods[foodname].spoil*troughmultiplier)
+					nursing: nursing, //In the Maeguana rather than the trough
+					mult: mult, //What the nursing boost multiplies each item by
+					period: Math.ceil($scope.foods[foodname].spoil*spoilmult),
+					next: Math.ceil($scope.foods[foodname].spoil*spoilmult)
 				});
 			}
-		};
+		}
+		}
 
 		//Make creatures for calcualtion
 		for (i=0;i<creaturelist.length;i++) {
@@ -3621,22 +3667,50 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					continue; //Creature cannot possibly eat below this
 				}
 
-				//Lowest-indexed stack this creature can eat from. Stacks are grouped by
-				//type in foodorder, so the first edible stack overall is the nearest of
-				//the per-type cursors - a few comparisons rather than a scan from 0.
-				currentstack=-1;
+				//Lowest-indexed stack this creature can eat from, per source. Stacks are
+				//grouped by type in foodorder, so the first edible stack is the nearest of the
+				//per-type cursors - a few comparisons rather than a scan from 0. Under 10%
+				//maturation a baby cannot use a trough at all, only the Maeguana. Applied only
+				//when there is one: without it the calculator's convention is that under-10%
+				//babies are hand-fed, and the buffer estimates rely on that.
+				var troughok=nursemult==1 || simcreature.maturation+time/simcreature.maturationtime>=0.1;
+				var troughstack=-1, nursestack=-1, nursetype=null;
 				for (var k=0;k<simcreature.eats.length;k++) {
 					var stacktype=simcreature.eats[k];
+					if (!stacktype.nursing && !troughok) {
+						continue;
+					}
 					while (stacktype.cursor<=stacktype.last && stacks[stacktype.cursor]['stacksize']<=0) {
 						stacktype.cursor++; //Emptied stacks never refill, so this only moves forward
 					}
-					if (stacktype.cursor<=stacktype.last && (currentstack<0 || stacktype.cursor<currentstack)) {
-						currentstack=stacktype.cursor;
+					if (stacktype.cursor>stacktype.last) {
+						continue;
+					}
+					if (stacktype.nursing) {
+						if (nursestack<0 || stacktype.cursor<nursestack) {
+							nursestack=stacktype.cursor;
+							nursetype=stacktype;
+						}
+					} else if (troughstack<0 || stacktype.cursor<troughstack) {
+						troughstack=stacktype.cursor;
+					}
+				}
+
+				//Trough against Maeguana: the game takes the lower food value / priority, with
+				//the nursing boost counted, and the trough on a tie.
+				currentstack=troughstack;
+				currentmult=1;
+				if (nursestack>-1) {
+					var nursescore=stacks[nursestack]['food']*simcreature.foodmultipliers[stacks[nursestack]['type']]*nursetype.mult/(foodpriority[stacks[nursestack]['type']] || 1);
+					var troughscore=troughstack<0 ? Infinity : stacks[troughstack]['food']*simcreature.foodmultipliers[stacks[troughstack]['type']]/(foodpriority[stacks[troughstack]['type']] || 1);
+					if (nursescore<troughscore) {
+						currentstack=nursestack;
+						currentmult=nursetype.mult;
 					}
 				}
 
 				if (currentstack>-1) {
-					foodmult=simcreature.foodmultipliers[stacks[currentstack]['type']];
+					foodmult=simcreature.foodmultipliers[stacks[currentstack]['type']]*currentmult;
 					wastemult=simcreature.wastemultipliers[stacks[currentstack]['type']];
 					if (stacks[currentstack]['food']*foodmult<simcreature.hunger) {
 						times[$scope.creatures[simcreature.name].type]=time;
