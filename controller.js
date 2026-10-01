@@ -168,6 +168,22 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			waste: 0
 		},
 
+		'Stone': {
+			food: 50,
+			stack: 100,
+			spoil: 9001*9001,
+			weight: 0.5,
+			waste: 0
+		},
+
+		'Clay': {
+			food: 25,
+			stack: 100,
+			spoil: 9001*9001,
+			weight: 0.05,
+			waste: 0
+		},
+
 		'Bio Toxin': {
 			food: 50,
 			stack: 100,
@@ -356,6 +372,22 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			waste: 0
 		},
 
+		'Stone': {
+			food: 50,
+			stack: 100,
+			spoil: 9001*9001,
+			weight: 0.5,
+			waste: 0
+		},
+
+		'Clay': {
+			food: 25,
+			stack: 100,
+			spoil: 9001*9001,
+			weight: 0.05,
+			waste: 0
+		},
+
 		'Bio Toxin': {
 			food: 50,
 			stack: 100,
@@ -400,14 +432,15 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		// Voidwyrm: ['Mutagen'],
 		CrystalWyvern: ['Primal Crystal'],
 		Magmasaur: ['Ambergris', 'Sulfur'],
+		Gargantar: ['Stone', 'Clay', 'Sulfur'], //Rock Elemental diet. Its tamed inventory whitelists all three, so babies auto-eat them
 		RockDrake: ['Nameless Venom'],
 		BloodStalker: ['Blood Pack', 'Raw Meat (Carrion)', 'Raw Fish Meat (Carrion)'],
 		Archelon: ['Vegetables (Archelon)','Bio Toxin','Berry (Archelon)']
 	}
 
-	$scope.foodlist=['Raw Meat', 'Cooked Meat', 'Raw Fish Meat', 'Raw Fish Meat (Carrion)', 'Cooked Fish Meat', 'Mejoberry', 'Berry', 'Vegetables', 'Kibble', 'Rare Flower', 'Chitin', 'Spoiled Meat', 'Wyvern Milk', 'Mutagen', 'Primal Crystal', 'Ambergris', 'Nameless Venom', 'Raw Meat (Carrion)', 'Blood Pack', 'Sulfur','Vegetables (Archelon)','Bio Toxin','Berry (Archelon)'] //Display order
+	$scope.foodlist=['Raw Meat', 'Cooked Meat', 'Raw Fish Meat', 'Raw Fish Meat (Carrion)', 'Cooked Fish Meat', 'Mejoberry', 'Berry', 'Vegetables', 'Kibble', 'Rare Flower', 'Chitin', 'Spoiled Meat', 'Wyvern Milk', 'Mutagen', 'Primal Crystal', 'Ambergris', 'Nameless Venom', 'Raw Meat (Carrion)', 'Blood Pack', 'Sulfur', 'Stone', 'Clay','Vegetables (Archelon)','Bio Toxin','Berry (Archelon)'] //Display order
 
-	$scope.foodorder=['Raw Fish Meat', 'Raw Fish Meat (Carrion)', 'Cooked Fish Meat', 'Raw Meat', 'Berry', 'Cooked Meat', 'Mejoberry', 'Vegetables', 'Kibble', 'Rare Flower', 'Chitin', 'Spoiled Meat', 'Wyvern Milk', 'Mutagen', 'Primal Crystal', 'Ambergris', 'Nameless Venom', 'Raw Meat (Carrion)', 'Blood Pack', 'Sulfur','Vegetables (Archelon)','Bio Toxin','Berry (Archelon)'] //In-game order
+	$scope.foodorder=['Raw Fish Meat', 'Raw Fish Meat (Carrion)', 'Cooked Fish Meat', 'Raw Meat', 'Berry', 'Cooked Meat', 'Mejoberry', 'Vegetables', 'Kibble', 'Rare Flower', 'Chitin', 'Spoiled Meat', 'Wyvern Milk', 'Mutagen', 'Primal Crystal', 'Ambergris', 'Nameless Venom', 'Raw Meat (Carrion)', 'Blood Pack', 'Sulfur', 'Clay', 'Stone','Vegetables (Archelon)','Bio Toxin','Berry (Archelon)'] //In-game order
 
 	$scope.troughtypes={
 		Normal: 4,
@@ -845,7 +878,22 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			agespeedmult: 0.7,
 			eggspeed: 0.005556,
 			eggspeedmult: 1.0,
-      weight: 350.0
+			weight: 350.0,
+			food: 3000.0
+		},
+
+		Cerberax: { //ASA Fantastic Tames (internal name Cerberus). Values from the game files, build 25636863
+			birthtype: "Gestation",
+			type: "Carnivore",
+			basefoodrate: 0.0025,
+			babyfoodrate: 25.5,
+			extrababyfoodrate: 20.0,
+			agespeed: 0.000003,
+			agespeedmult: 0.8,
+			gestationspeed: 0.000035,
+			gestationspeedmult: 0.8,
+			weight: 666.0,
+			food: 3000.0
 		},
 
 		Cat: { //
@@ -1334,6 +1382,23 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			eggspeedmult: 3.5,
 			weight: 270,
 			food: 1000
+		},
+
+		Gargantar: { //ASA Dragontopia (internal name GasBagRhino). Values from the game files, build 25636863. Eats what a Rock Elemental eats; Sulfur and Clay are worth 25 to it, Stone 50
+			birthtype: "Incubation",
+			type: "Gargantar",
+			basefoodrate: 0.000185,
+			babyfoodrate: 13.0,
+			extrababyfoodrate: 3.0,
+			agespeed: 0.000003,
+			agespeedmult: 1.0,
+			eggspeed: 0.005556,
+			eggspeedmult: 1.0,
+			weight: 950.0,
+			food: 4500.0,
+			foodmultipliers: {
+				'Sulfur': 0.5
+			}
 		},
 
 		Gasbag: { //
