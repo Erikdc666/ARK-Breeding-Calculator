@@ -174,7 +174,7 @@
 				require: 'ngModel',
 				link: function(scope, element, attrs, ngModel) {
 					ngModel.$formatters.push(function(value) {
-						return value*100;
+						return Math.round(value*1e6)/1e4; //Not value*100: 0.3263*100 shows as 32.629999999999995
 					});
 
 					ngModel.$parsers.push(function(value) {

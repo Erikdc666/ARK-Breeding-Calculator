@@ -3487,6 +3487,66 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		$scope.requirementscalc();
 	}
 
+	//"Time went by": optional, and only on the button. Every field stays a plain manual
+	//field; this just fills them in. Give one row's maturation as it reads now and the time
+	//that passed follows from how far it grew. Every other row grew for the same time, and
+	//the sim run over that time says what was eaten and what spoiled, so the food fields
+	//become what should be left. An estimate: it assumes the babies started full, nobody
+	//hand-fed or topped up in between, and it squashes what is left of each food back into
+	//full stacks plus one partial with fresh spoil timers.
+	$scope.elapsed={row: 0, maturation: null, done: null, error: '', undo: null};
+
+	$scope.elapsedlabel=function(row) {
+		return row.name+(row.quantity>1 ? ' x'+row.quantity : '')+' ('+(Math.round(row.maturation*1000)/10)+'%)';
+	}
+
+	$scope.timewentby=function() {
+		var ref=$scope.creaturelist[$scope.elapsed.row];
+		var to=$scope.elapsed.maturation;
+		$scope.elapsed.error='';
+		if (!ref) {
+			$scope.elapsed.error='Pick a creature row first';
+			return;
+		}
+		if (!(to>ref.maturation) || to>1) {
+			$scope.elapsed.error='Fill in what it reads now: more than '+(Math.round(ref.maturation*1000)/10)+'%, at most 100%';
+			return;
+		}
+		var seconds=Math.round((to-ref.maturation)*maturationtime(ref.name));
+		var result=$scope.troughsim($scope.creaturelist, $scope.troughstacks, $scope.troughtypes[$scope.settings.troughtype], $scope.maeguana, {duration: seconds});
+		$scope.elapsed.undo={
+			creaturelist: angular.copy($scope.creaturelist),
+			troughstacks: angular.copy($scope.troughstacks),
+			maeguanastacks: angular.copy($scope.maeguana.stacks)
+		};
+		for (var i=0;i<$scope.creaturelist.length;i++) {
+			var row=$scope.creaturelist[i];
+			row.maturation=row===ref ? to : Math.min(1, Math.round((row.maturation+seconds/maturationtime(row.name))*10000)/10000);
+		}
+		for (var food in $scope.troughstacks) {
+			$scope.troughstacks[food]=result.remaining.trough[food] || 0;
+		}
+		for (var food in $scope.maeguana.stacks) {
+			$scope.maeguana.stacks[food]=result.remaining.maeguana[food] || 0;
+		}
+		$scope.elapsed.done={seconds: seconds, eaten: result.eatenfood, spoiled: result.spoiledfood, starving: result.starving};
+		$scope.elapsed.maturation=null;
+		$scope.troughcalc();
+	}
+
+	$scope.timewentbyundo=function() {
+		var undo=$scope.elapsed.undo;
+		if (!undo) {
+			return;
+		}
+		$scope.creaturelist=undo.creaturelist;
+		$scope.troughstacks=undo.troughstacks;
+		$scope.maeguana.stacks=undo.maeguanastacks;
+		$scope.elapsed.undo=null;
+		$scope.elapsed.done=null;
+		$scope.troughcalc();
+	}
+
 	//"Requires N stacks" next to every food field: with every other field as it is, the
 	//fewest stacks of this food in this container for which no baby starves before adult.
 	//Found by search over full sims, so it runs in the background one field per step and a
@@ -3641,6 +3701,21 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	//under one raw meat an hour).
 	var foodpriority={'Raw Meat': 3, 'Raw Fish Meat': 3};
 
+	//Food in a tamed dino's inventory lasts 4x as long as in a survivor's - the same as a
+	//normal trough. From the game files: DinoTamedInventoryComponent_BP_Base carries
+	//ItemSpoilingTimeMultipliers = PrimalItemConsumableEatable x4, and neither the Maewing's
+	//inventory component nor the Maeguana overrides it.
+	var dinospoilmult=4;
+
+	//Seconds from birth to adult at the current rates.
+	function maturationtime(name) {
+		var seconds=1/$scope.creatures[name].agespeed/$scope.creatures[name].agespeedmult/$scope.settings.maturationspeed;
+		if ($scope.settings.gen2hatcheffect === true) {
+			seconds/=1.5;
+		}
+		return seconds;
+	}
+
 	$scope.maeguanamultiplier=function(maeguana) {
 		if (!maeguana || !(maeguana.points>0)) {
 			return 1;
@@ -3651,6 +3726,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	//opts.survival: only answer "does anyone starve" - stop at the first starvation.
 	//opts.counts(creature, maturation): whether a starvation there counts. One that does not
 	//is treated as fed from elsewhere - it stays alive at empty and keeps eating later.
+	//opts.duration: run for exactly this many seconds, whatever happens to the food, and
+	//report what is left (output.remaining) - for "time went by". Nobody starves in this
+	//mode; output.starving lists who ran out of food and when.
 	$scope.troughsim=function(creaturelist, troughstacks, troughmultiplier, maeguana, opts) {
 		opts=opts || {};
 		//All locals. They used to be implicit globals, which made the per-second loop below
@@ -3678,9 +3756,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		//regions instead of walking every stack on every tick.
 		var stacktypes=[];
 		//Trough stacks first, then the Maeguana's, so for the same food the trough's run has
-		//the lower index. A dino inventory spoils at the normal 1x rate.
-		//A Maeguana counts as soon as it holds food, even at 0 Food points (x1): the 10%
-		//rule and its own spoil rate still apply.
+		//the lower index. A Maeguana counts as soon as it holds food, even at 0 Food points
+		//(x1): the 10% rule and its own spoil rate still apply.
 		var nursemult=$scope.maeguanamultiplier(maeguana);
 		var hasmaeguana=false;
 		if (maeguana && maeguana.stacks) {
@@ -3690,7 +3767,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 		addstacks(troughstacks, troughmultiplier, false, 1);
 		if (hasmaeguana) {
-			addstacks(maeguana.stacks, 1, true, nursemult);
+			addstacks(maeguana.stacks, dinospoilmult, true, nursemult);
 		}
 		function addstacks(stackmap, spoilmult, nursing, mult) {
 		for (var i=0; i<foodorder.length; i++) {
@@ -3752,10 +3829,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				newcreature.count=Math.floor(creaturelist[i].quantity);
 				newcreature.name=name;
 				newcreature.maturation=creaturelist[i].maturation;
-				newcreature.maturationtime=1/$scope.creatures[name].agespeed/$scope.creatures[name].agespeedmult/$scope.settings.maturationspeed;
-				if ($scope.settings.gen2hatcheffect === true) {
-					newcreature.maturationtime=1/$scope.creatures[name].agespeed/$scope.creatures[name].agespeedmult/$scope.settings.maturationspeed/1.5;
-				}
+				newcreature.maturationtime=maturationtime(name);
 				newcreature.maturationtimecomplete=newcreature.maturationtime*newcreature.maturation;
 				newcreature.maxfoodrate=$scope.creatures[name].basefoodrate*$scope.creatures[name].babyfoodrate*$scope.creatures[name].extrababyfoodrate*$scope.settings.consumptionspeed;
 				newcreature.minfoodrate=$scope.settings.baseminfoodrate*$scope.creatures[name].babyfoodrate*$scope.creatures[name].extrababyfoodrate*$scope.settings.consumptionspeed;
@@ -3765,6 +3839,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				newcreature.adultfood=$scope.creatures[name].food;
 				newcreature.row=i; //Which creature row it came from, for the starvation report
 				newcreature.starvedat=-1;
+				newcreature.dryat=-1;
 				//Food cap and the 10% trough threshold as straight lines in sim time, so the
 				//per-second loop does a multiply-add instead of calling out.
 				newcreature.capbase=babyfoodcapacity(newcreature.adultfood, newcreature.maturation);
@@ -3818,7 +3893,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		//spoiling after that is not a loss anyone pays. The buffer estimates measure how long the
 		//food lasts, so they keep running until it is gone.
 		var growing=1;
-		while ((totalstacks['all']>0 || reserves>0) && time<horizon && !(opts.survival && anystarved) && (growing>0 || maeguana===undefined)) {
+		while (opts.duration ? time<opts.duration : ((totalstacks['all']>0 || reserves>0) && time<horizon && !(opts.survival && anystarved) && (growing>0 || maeguana===undefined))) {
 			time++;
 			growing=0;
 
@@ -3968,7 +4043,12 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				}
 				//Still empty after trying to eat: its Food is at 0. Nobody is assumed to hand-feed.
 				if (simcreature.hunger>=cap) {
-					if (opts.counts && !opts.counts(simcreature, simcreature.maturation+time/simcreature.maturationtime)) {
+					if (opts.duration) {
+						//Time that already went by: the baby is known to be alive, so it got by
+						//some other way. Note when it first ran dry and let it keep eating.
+						simcreature.hunger=cap;
+						if (simcreature.dryat<0) simcreature.dryat=time;
+					} else if (opts.counts && !opts.counts(simcreature, simcreature.maturation+time/simcreature.maturationtime)) {
 						simcreature.hunger=cap;
 					} else {
 						simcreature.starvedat=time;
@@ -4010,7 +4090,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		var starving=[];
 		for (i=0;i<troughcreatures.length;i++) {
 			var c=troughcreatures[i];
-			if (c.starvedat<0) {
+			if (opts.duration) {
+				c.starvedat=c.dryat; //Reported as "ran out of food", not as dead
+			} else if (c.starvedat<0) {
 				var t=time, hunger=Math.max(0, c.hunger), rate=c.foodrate;
 				while (rate>=c.minfoodrate && t<60*60*24*30) {
 					hunger+=rate*60;
@@ -4044,8 +4126,19 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		}
 		starving.sort(function(a, b) { return a.time-b.time; });
 
+		//What is left in each container, in stacks (a fraction for the part-eaten ones).
+		var remaining={trough: {}, maeguana: {}};
+		for (i=0;i<stacktypes.length;i++) {
+			var items=0;
+			for (j=stacktypes[i].first;j<=stacktypes[i].last;j++) {
+				items+=Math.max(0, stacks[j]['stacksize']);
+			}
+			remaining[stacktypes[i].nursing ? 'maeguana' : 'trough'][stacktypes[i].name]=Math.round(items/$scope.foods[stacktypes[i].name].stack*1000)/1000;
+		}
+
 		output={
 			starving: starving,
+			remaining: remaining,
 			time: time,
 			times: times,
 			totalfood: eatenfood+spoiledfood,

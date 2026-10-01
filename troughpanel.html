@@ -17,7 +17,7 @@
 			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('trough', food)}">{{requirementtext('trough', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time). &quot;Spoils too fast&quot;: no amount of it here is enough, because every stack spoils away before the babies grow up - it needs another food or a slower-spoiling container alongside</span></span></td>
 		</tr>
 		<tr>
-			<td colspan="2" class="label tooltip" style="text-align: center; padding-top: 6px">In a nursing Maeguana<span class="tooltiptext">A Maeguana or Maewing with Nursing on, next to the trough. Leave its stacks at 0 if you have none. Babies (up to 100%) get 1.01^Food points out of every item they take from it. Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies eat from the trough first. Its inventory spoils at the normal 1x rate</span></td>
+			<td colspan="2" class="label tooltip" style="text-align: center; padding-top: 6px">In a nursing Maeguana<span class="tooltiptext">A Maeguana or Maewing with Nursing on, next to the trough. Leave its stacks at 0 if you have none. Babies (up to 100%) get 1.01^Food points out of every item they take from it. Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies eat from the trough first. Its inventory spoils 4x slower than a survivor's, like any tamed dino - the same as a normal trough</span></td>
 		</tr>
 		<tr>
 			<td style="width: 36%" class="label tooltip">Food points:<span class="tooltiptext">The Maeguana's wild + tamed + mutation levels in Food</span></td>
@@ -64,6 +64,24 @@
 			<td><input ng-model="troughcreature.maturation" ng-change="troughcalc()" ng-model-options="{debounce: 300}" percentage type="number"></td>
 			<td><input ng-model="troughcreature.quantity" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"></td>
 			<td><input type="button" ng-click="troughremovecreature(index)" value="Remove"></td>
+		</tr>
+		<tr>
+			<td colspan="4" class="label tooltip" style="text-align: center; padding-top: 6px">Time went by<span class="tooltiptext">Optional. Pick one row, fill in the maturation it shows in game now, and press Apply: the time that passed follows from how far it grew. Every other row is grown by the same time, and the food fields become what should be left after eating and spoiling. An estimate - it assumes the babies started full and nobody hand-fed or refilled in between. All fields stay editable afterwards, and Undo puts them back</span></td>
+		</tr>
+		<tr>
+			<td><select ng-options="creaturelist.indexOf(row) as elapsedlabel(row) for row in creaturelist" ng-model="elapsed.row"></select></td>
+			<td><input ng-model="elapsed.maturation" percentage type="number" placeholder="now %"></td>
+			<td><input type="button" ng-click="timewentby()" value="Apply"></td>
+			<td><input type="button" ng-click="timewentbyundo()" ng-disabled="!elapsed.undo" value="Undo"></td>
+		</tr>
+		<tr ng-show="elapsed.error">
+			<td colspan="4" style="color: #ff8a80">{{elapsed.error}}</td>
+		</tr>
+		<tr ng-show="elapsed.done">
+			<td colspan="4">{{elapsed.done.seconds | secondsToDateTime}} went by: {{elapsed.done.eaten | number:0}} items eaten, {{elapsed.done.spoiled | number:0}} spoiled</td>
+		</tr>
+		<tr ng-repeat="starve in elapsed.done.starving">
+			<td colspan="4" style="color: #ff8a80">&#9888; By this estimate {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> had nothing to eat from {{starve.time | secondsToDateTime}} in - it got by some other way, so what is left is less certain</td>
 		</tr>
 	</table>
 	</div>
