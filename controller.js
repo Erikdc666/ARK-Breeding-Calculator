@@ -3559,7 +3559,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		if (!r) return '';
 		if (r.pending) return '(checking...)';
 		if (r.never) return '(spoils too fast)'; //Even 20000 stacks run out: every stack spoils away before they grow up
-		if (r.need==0) return r.current>0 ? '(not needed)' : '(none needed)';
+		//Zero would do, but what is there still gets eaten (lowest food value first) and so
+		//lowers what the other fields need - "not needed" read as if it sat there unused.
+		if (r.need==0) return r.current>0 ? '(optional, the rest covers it)' : '(none needed)';
 		if (r.current>=r.need) return '(enough, needs '+r.need+')';
 		return '(requires '+r.need+', +'+Math.ceil(r.need-r.current)+')';
 	}
