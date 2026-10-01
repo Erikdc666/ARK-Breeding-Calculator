@@ -189,6 +189,14 @@
 		/* Side-by-side creature panels. The row scrolls sideways rather than wrapping:
 		   wrapping just stacks columns down the page, which is what having them side by
 		   side was meant to avoid. */
+		/* The box grows with the open columns, but never past the window: from there the
+		   rows scroll. Without the cap it kept growing, centred, and its left edge went off
+		   screen where no scrollbar reaches. */
+		.box {
+			display: inline-block; /* a table ignores max-width below its content's width */
+			max-width: calc(100vw - 40px);
+			box-sizing: border-box;
+		}
 		.panelbar {
 			margin-bottom: 10px;
 		}
