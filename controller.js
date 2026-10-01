@@ -3557,18 +3557,19 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	$scope.requirementtext=function(source, food) {
 		var r=$scope.requirements[source][food];
 		if (!r) return '';
-		if (r.pending) return '(checking...)';
+		if (r.pending) return '(...)';
 		if (r.never) return '(spoils too fast)'; //Even 20000 stacks run out: every stack spoils away before they grow up
-		//Zero would do, but what is there still gets eaten (lowest food value first) and so
-		//lowers what the other fields need - "not needed" read as if it sat there unused.
-		if (r.need==0) return r.current>0 ? '(optional, the rest covers it)' : '(none needed)';
+		//Zero would do. If it is being eaten anyway (lowest food value first) it is simply
+		//"enough"; "not needed" is kept for food nobody touches.
+		if (r.need==0) return r.used ? '(enough)' : '(not needed)';
 		if (r.current>=r.need) return '(enough, needs '+r.need+')';
-		return '(requires '+r.need+', +'+Math.ceil(r.need-r.current)+')';
+		return '(needs '+r.need+', +'+Math.ceil(r.need-r.current)+')';
 	}
 
 	$scope.requirementcolor=function(source, food) {
 		var r=$scope.requirements[source][food];
-		if (!r || r.pending || r.need==0) return '';
+		if (!r || r.pending) return '';
+		if (r.need==0) return r.used ? '#b9f6ca' : '';
 		if (r.never || r.current<r.need) return '#ff8a80';
 		return '#b9f6ca';
 	}
@@ -3592,8 +3593,26 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		var maeguana=angular.copy($scope.maeguana);
 		var troughmultiplier=$scope.troughtypes[$scope.settings.troughtype];
 
+		//Food that is there but never eaten as things stand - it spoils first, or something
+		//eaten before it lasts the whole way. It is "not needed", and it is left out while
+		//solving the other fields: otherwise the food that IS being eaten would read as
+		//needing 0, covered by a food that is never reached.
+		var used=($scope.troughdata && $scope.troughdata.used) || {trough: {}, maeguana: {}};
+		var nostarving=$scope.troughdata && $scope.troughdata.starving.length==0;
+		function unused(source, food) {
+			return sources[source][food]>0 && !(used[source][food]>0);
+		}
+		var basetrough=angular.copy(troughstacks), basemaeguana=angular.copy(maeguana);
+		for (var source in sources) {
+			for (var food in sources[source]) {
+				if (unused(source, food)) {
+					(source=='trough' ? basetrough : basemaeguana.stacks)[food]=0;
+				}
+			}
+		}
+
 		function survives(source, food, amount) {
-			var tr=angular.copy(troughstacks), mg=angular.copy(maeguana);
+			var tr=angular.copy(basetrough), mg=angular.copy(basemaeguana);
 			(source=='trough' ? tr : mg.stacks)[food]=amount;
 			//Only the babies this field can feed: ones that eat this food, and for a trough
 			//field only from 10% on - under that they cannot reach it, which is the Maeguana's
@@ -3617,6 +3636,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 		function solve(field) {
 			var current=(field.source=='trough' ? troughstacks : maeguana.stacks)[field.food] || 0;
+			if (nostarving && unused(field.source, field.food)) {
+				return {need: 0, current: current, used: false};
+			}
 			var stackpoints=$scope.foods[field.food].stack*$scope.foods[field.food].food;
 			var guesskey=field.source+'|'+eaterkey(field.food);
 			var lo, hi;
@@ -3679,6 +3701,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			var result=solve(field);
 			if (run!=requirementsrun) {
 				return;
+			}
+			if (result.used===undefined) {
+				result.used=used[field.source][field.food]>0;
 			}
 			$scope.requirements[field.source][field.food]=result;
 			$interval(step, 0, 1); //Next field on a fresh tick, so the page stays responsive
@@ -4031,6 +4056,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 							troughcreatures.splice(i+1, 0, unfed);
 						}
 						times[$scope.creatures[simcreature.name].type]=time;
+						runtype.eaten=(runtype.eaten || 0)+taken;
 						eatenfood+=taken;
 						eatenpoints+=(gain-overflow)*taken;
 						wastedpoints+=(waste*wastemult+overflow)*taken;
@@ -4130,17 +4156,20 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 		//What is left in each container, in stacks (a fraction for the part-eaten ones).
 		var remaining={trough: {}, maeguana: {}};
+		var usedfood={trough: {}, maeguana: {}}; //Items eaten, per container and food
 		for (i=0;i<stacktypes.length;i++) {
 			var items=0;
 			for (j=stacktypes[i].first;j<=stacktypes[i].last;j++) {
 				items+=Math.max(0, stacks[j]['stacksize']);
 			}
+			usedfood[stacktypes[i].nursing ? 'maeguana' : 'trough'][stacktypes[i].name]=stacktypes[i].eaten || 0;
 			remaining[stacktypes[i].nursing ? 'maeguana' : 'trough'][stacktypes[i].name]=Math.round(items/$scope.foods[stacktypes[i].name].stack*1000)/1000;
 		}
 
 		output={
 			starving: starving,
 			remaining: remaining,
+			used: usedfood,
 			time: time,
 			times: times,
 			totalfood: eatenfood+spoiledfood,

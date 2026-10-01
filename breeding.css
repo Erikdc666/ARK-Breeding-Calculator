@@ -279,13 +279,28 @@
 		}
 
 		/* Trough columns are wider than creature columns: every food row carries a number
-		   input plus its "(requires N, +M)" note, which should stay on one line. */
+		   input plus its "(needs N, +M)" note, which should stay on one line. */
 		.troughcolumn {
-			flex: 0 0 620px;
-			min-width: 620px;
+			flex: 0 0 540px;
+			min-width: 540px;
 		}
 		.requirement {
 			white-space: nowrap;
+		}
+		/* The tooltip inside it must still wrap: on one line it is thousands of pixels
+		   wide and gives the trough row a scrollbar to nowhere. */
+		.requirement .tooltiptext {
+			white-space: normal;
+		}
+		/* A hidden tooltip still takes up room where it would appear. The long ones on the
+		   bottom rows stuck out under the row, which gave it a vertical scrollbar, whose
+		   width then forced a horizontal one. Keep them tucked inside their label until
+		   hovered. */
+		.panelrow .tooltip:not(:hover) .tooltiptext {
+			top: 0px;
+			left: 0px;
+			max-height: 1em;
+			overflow: hidden;
 		}
 		.troughhandle {
 			cursor: move;
@@ -295,6 +310,6 @@
 			text-overflow: ellipsis;
 		}
 		.troughrow .panelplaceholder {
-			flex: 0 0 620px;
-			min-width: 620px;
+			flex: 0 0 540px;
+			min-width: 540px;
 		}
