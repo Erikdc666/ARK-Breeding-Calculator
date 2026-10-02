@@ -61,7 +61,7 @@
 		</tr>
 		<tr ng-repeat="(index, troughcreature) in creaturelist">
 			<td><select ng-options="name as name for (name, details) in creatures" ng-model="troughcreature.name" ng-change="troughupdatefoodtypes();troughcalc()"></select></td>
-			<td><input ng-model="troughcreature.maturation" ng-change="troughcalc()" ng-model-options="{debounce: 300}" percentage type="number"></td>
+			<td><input ng-model="troughcreature.maturation" ng-change="troughcalc()" ng-model-options="{debounce: 300}" percentage type="number" step="0.1"></td>
 			<td><input ng-model="troughcreature.quantity" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"></td>
 			<td><input type="button" ng-click="troughremovecreature(index)" value="Remove"></td>
 		</tr>
@@ -70,7 +70,7 @@
 		</tr>
 		<tr>
 			<td><select ng-options="creaturelist.indexOf(row) as elapsedlabel(row) for row in creaturelist" ng-model="elapsed.row"></select></td>
-			<td><input ng-model="elapsed.maturation" percentage type="number" placeholder="now %"></td>
+			<td><input ng-model="elapsed.maturation" percentage type="number" step="0.1" placeholder="now %"></td>
 			<td><input type="button" ng-click="timewentby()" value="Apply"></td>
 			<td><input type="button" ng-click="timewentbyundo()" ng-disabled="!elapsed.undo" value="Undo"></td>
 		</tr>
