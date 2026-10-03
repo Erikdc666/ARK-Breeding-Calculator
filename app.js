@@ -5,7 +5,7 @@
 			$locationProvider.html5Mode(true);
 
 			$routeProvider.when('/', {
-				templateUrl: 'breeding.html?d=20261004', controller: 'breedingController'
+				templateUrl: 'breeding.html?d=20261004.1', controller: 'breedingController'
 			}).
 			otherwise({
 				redirectTo: '/'
@@ -106,27 +106,22 @@
 			}
 		}]);
 
-		//Put a tooltip beside the label it belongs to: to the right when it fits in the
-		//window, else to the left, else under it - and never past the window's edges.
-		jQuery(document).on('mouseenter', '.tooltip', function() {
+		//A tooltip follows the cursor: to its right when that fits in the window, else to
+		//its left; downwards from the cursor's line, or upwards when there is no room below.
+		jQuery(document).on('mouseenter mousemove', '.tooltip', function(e) {
 			var tip=jQuery(this).children('.tooltiptext');
 			if (!tip.length) {
 				return;
 			}
-			var box=this.getBoundingClientRect();
-			var width=tip.outerWidth(), height=tip.outerHeight(), margin=8;
-			var left=box.right, top=box.top;
+			var width=tip.outerWidth(), height=tip.outerHeight(), gap=14, margin=8;
+			var left=e.clientX+gap, top=e.clientY;
 			if (left+width>window.innerWidth-margin) {
-				left=box.left-width;
-			}
-			if (left<margin) {
-				left=Math.max(margin, Math.min(box.left, window.innerWidth-width-margin));
-				top=box.bottom;
+				left=e.clientX-gap-width;
 			}
 			if (top+height>window.innerHeight-margin) {
-				top=Math.max(margin, window.innerHeight-height-margin);
+				top=e.clientY-height;
 			}
-			tip.css({left: left+'px', top: top+'px'});
+			tip.css({left: Math.max(margin, left)+'px', top: Math.max(margin, top)+'px'});
 		});
 
 		//Drag columns into a different order. Used by both the creature row and the trough

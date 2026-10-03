@@ -3649,6 +3649,16 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		return '(needs '+r.need+', +'+Math.ceil(r.need-r.current)+')';
 	}
 
+	//One sentence for the state the note is in, rather than one text explaining them all.
+	$scope.requirementtip=function(source, food) {
+		var r=$scope.requirements[source][food];
+		if (!r) return '';
+		if (r.pending) return 'Calculating.';
+		if (r.never) return 'Spoils before the babies grow up, however much you add. Add another food or use a slower-spoiling trough.';
+		if (r.need==0) return r.used ? 'The other foods already cover it, but this one gets eaten too.' : 'None of this gets eaten: it spoils first or another food lasts the whole way.';
+		if (r.current>=r.need) return r.need+' stacks here is enough for every baby to reach adult.';
+		return r.need+' stacks here and no baby starves before adult. '+Math.ceil(r.need-r.current)+' more to go.';
+	}
 	$scope.requirementcolor=function(source, food) {
 		var r=$scope.requirements[source][food];
 		if (!r || r.pending) return '';

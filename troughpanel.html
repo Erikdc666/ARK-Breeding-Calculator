@@ -13,15 +13,15 @@
 			<td colspan="2" class="label" style="text-align: center; padding-top: 6px">In the {{settings.troughtype}} trough</td>
 		</tr>
 		<tr ng-repeat="(food, stacks) in troughstacks">
-			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the trough. Spoils at the trough's rate, no Maeguana bonus</span></td>
-			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('trough', food)}">{{requirementtext('trough', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time). &quot;Enough&quot; without a number: the other fields would cover it, but it does get eaten (the smallest food item goes first). &quot;Not needed&quot;: as things stand none of it gets eaten - it spoils first, or a food eaten before it lasts the whole way. &quot;Spoils too fast&quot;: no amount of it here is enough, because every stack spoils away before the babies grow up - it needs another food or a slower-spoiling container alongside</span></span></td>
+			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the trough.</span></td>
+			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('trough', food)}">{{requirementtext('trough', food)}}<span class="tooltiptext">{{requirementtip('trough', food)}}</span></span></td>
 		</tr>
 		<tr ng-repeat="(type, time) in troughdata.times">
 			<td style="width: 36%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>
 			<td>{{time | secondsToDateTime}}</td>
 		</tr>
 		<tr ng-repeat="starve in troughdata.starving">
-			<td style="width: 36%; color: #ff8a80" class="label tooltip">&#9888; {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> starves<span class="tooltiptext">Its Food hits 0 at {{starve.maturation*100 | number:1}}% maturation, assuming nobody hand-feeds. Under 10% a baby can only eat from the Maeguana, never the trough</span></td>
+			<td style="width: 36%; color: #ff8a80" class="label tooltip">&#9888; {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> starves<span class="tooltiptext">Food hits 0 at {{starve.maturation*100 | number:1}}% maturation if nobody hand-feeds.</span></td>
 			<td style="color: #ff8a80">in {{starve.time | secondsToDateTime}} ({{starve.maturation*100 | number:1}}%)</td>
 		</tr>
 		<tr ng-show="troughdata.starving && troughdata.starving.length==0 && creaturelist.length>0">
@@ -43,8 +43,8 @@
 			<td><input ng-model="maeguana.points" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0"> &times;{{maeguanamultiplier(maeguana) | number:2}}</td>
 		</tr>
 		<tr ng-repeat="(food, stacks) in maeguana.stacks">
-			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana's inventory</span></td>
-			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('maeguana', food)}">{{requirementtext('maeguana', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time). &quot;Enough&quot; without a number: the other fields would cover it, but it does get eaten (the smallest food item goes first). &quot;Not needed&quot;: as things stand none of it gets eaten - it spoils first, or a food eaten before it lasts the whole way. &quot;Spoils too fast&quot;: no amount of it here is enough, because every stack spoils away before the babies grow up - it needs another food or a slower-spoiling container alongside</span></span></td>
+			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana. Babies under 10% can only eat from here.</span></td>
+			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('maeguana', food)}">{{requirementtext('maeguana', food)}}<span class="tooltiptext">{{requirementtip('maeguana', food)}}</span></span></td>
 		</tr>
 	</table>
 	</div>
@@ -69,7 +69,7 @@
 			<td><input type="button" ng-click="troughremovecreature(index)" value="Remove"></td>
 		</tr>
 		<tr>
-			<td colspan="4" class="label tooltip" style="text-align: center; padding-top: 6px">Time went by<span class="tooltiptext">Optional. Pick one row, fill in the maturation it shows in game now, and press Apply: the time that passed follows from how far it grew. Every other row is grown by the same time, and the food fields become what should be left after eating and spoiling. An estimate - it assumes the babies started full and nobody hand-fed or refilled in between. All fields stay editable afterwards, and Undo puts them back</span></td>
+			<td colspan="4" class="label tooltip" style="text-align: center; padding-top: 6px">Time went by<span class="tooltiptext">Fill in one baby's current maturation and press Apply: all rows grow by the same time and the food left is estimated. Undo puts it back.</span></td>
 		</tr>
 		<tr>
 			<td><select ng-options="creaturelist.indexOf(row) as elapsedlabel(row) for row in creaturelist" ng-model="elapsed.row"></select></td>

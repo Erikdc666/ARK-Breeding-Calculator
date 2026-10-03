@@ -300,7 +300,7 @@
 		.requirement .tooltiptext {
 			white-space: normal;
 		}
-		/* Tooltips are placed against the window (app.js puts them beside their label, on
+		/* Tooltips are placed against the window (app.js keeps them next to the cursor, on
 		   whichever side has room). As absolute boxes they stuck out of the scrolling rows
 		   and gave them scrollbars - even while hidden. */
 		.tooltip .tooltiptext {
