@@ -106,6 +106,29 @@
 			}
 		}]);
 
+		//Put a tooltip beside the label it belongs to: to the right when it fits in the
+		//window, else to the left, else under it - and never past the window's edges.
+		jQuery(document).on('mouseenter', '.tooltip', function() {
+			var tip=jQuery(this).children('.tooltiptext');
+			if (!tip.length) {
+				return;
+			}
+			var box=this.getBoundingClientRect();
+			var width=tip.outerWidth(), height=tip.outerHeight(), margin=8;
+			var left=box.right, top=box.top;
+			if (left+width>window.innerWidth-margin) {
+				left=box.left-width;
+			}
+			if (left<margin) {
+				left=Math.max(margin, Math.min(box.left, window.innerWidth-width-margin));
+				top=box.bottom;
+			}
+			if (top+height>window.innerHeight-margin) {
+				top=Math.max(margin, window.innerHeight-height-margin);
+			}
+			tip.css({left: left+'px', top: top+'px'});
+		});
+
 		//Drag columns into a different order. Used by both the creature row and the trough
 		//row, so the list and the drag handle come from attributes rather than being baked
 		//in. Uses the browser's own drag and drop: the bundled jQuery UI build only carries
