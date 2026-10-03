@@ -2987,7 +2987,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		$scope.maeguana={points: 0, stacks: emptystacks()};
 	}
 
-	//The Maeguana rows fold away under their heading, for anyone who has none. Kept on the
+	//The Maeguana section folds away under its title, for anyone who has none. Kept on the
 	//maeguana object so it is saved with its trough. Never chosen yet: closed, unless it
 	//already holds something. Folding only hides the rows - its food still counts.
 	$scope.maeguanaholdsfood=function() {

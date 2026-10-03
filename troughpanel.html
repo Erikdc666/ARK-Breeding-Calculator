@@ -16,17 +16,6 @@
 			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the trough. Spoils at the trough's rate, no Maeguana bonus</span></td>
 			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('trough', food)}">{{requirementtext('trough', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time). &quot;Enough&quot; without a number: the other fields would cover it, but it does get eaten (the smallest food item goes first). &quot;Not needed&quot;: as things stand none of it gets eaten - it spoils first, or a food eaten before it lasts the whole way. &quot;Spoils too fast&quot;: no amount of it here is enough, because every stack spoils away before the babies grow up - it needs another food or a slower-spoiling container alongside</span></span></td>
 		</tr>
-		<tr>
-			<td colspan="2" class="label tooltip sectiontoggle" style="text-align: center; padding-top: 6px" ng-click="togglemaeguana()"><span ng-hide="maeguana.collapsed">&minus;</span><span ng-show="maeguana.collapsed">+</span> In a nursing Maeguana<span ng-show="maeguana.collapsed && maeguanaholdsfood()"> (holds food, still counted)</span><span class="tooltiptext">Click to show or hide. A Maeguana or Maewing with Nursing on, next to the trough. Leave its stacks at 0 if you have none. Babies (up to 100%) get 1.01^Food points out of every item they take from it. Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies eat from the trough first. Its inventory spoils 4x slower than a survivor's, like any tamed dino - the same as a normal trough</span></td>
-		</tr>
-		<tr ng-hide="maeguana.collapsed">
-			<td style="width: 36%" class="label tooltip">Food points:<span class="tooltiptext">The Maeguana's wild + tamed + mutation levels in Food</span></td>
-			<td><input ng-model="maeguana.points" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0"> &times;{{maeguanamultiplier(maeguana) | number:2}}</td>
-		</tr>
-		<tr ng-repeat="(food, stacks) in maeguana.stacks" ng-hide="maeguana.collapsed">
-			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana's inventory</span></td>
-			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('maeguana', food)}">{{requirementtext('maeguana', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time). &quot;Enough&quot; without a number: the other fields would cover it, but it does get eaten (the smallest food item goes first). &quot;Not needed&quot;: as things stand none of it gets eaten - it spoils first, or a food eaten before it lasts the whole way. &quot;Spoils too fast&quot;: no amount of it here is enough, because every stack spoils away before the babies grow up - it needs another food or a slower-spoiling container alongside</span></span></td>
-		</tr>
 		<tr ng-repeat="(type, time) in troughdata.times">
 			<td style="width: 36%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>
 			<td>{{time | secondsToDateTime}}</td>
@@ -42,6 +31,20 @@
 		<tr>
 			<td style="width: 36%" class="label tooltip">Loss<span class="tooltiptext">Amount of food points to spoilage, cooking meat is automatic 50% loss</span></td>
 			<td>{{(troughdata.spoiledpoints+troughdata.wastedpoints)/troughdata.totalpoints*100 | number:1}}%</td>
+		</tr>
+	</table>
+	</div>
+
+	<div class="tableheader slide" ng-class="{'dimmed': maeguana.collapsed}" ng-click="togglemaeguana()">Trough Calculator - Nursing Maeguana<span ng-show="maeguana.collapsed && maeguanaholdsfood()"> (holds food, still counted)</span></div>
+	<div class="tableslide" ng-hide="maeguana.collapsed">
+	<table>
+		<tr>
+			<td style="width: 36%" class="label tooltip">Food points:<span class="tooltiptext">The Maeguana's wild + tamed + mutation levels in Food. A Maeguana or Maewing with Nursing on, next to the trough. Leave its stacks at 0 if you have none. Babies (up to 100%) get 1.01^Food points out of every item they take from it. Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies eat from the trough first. Its inventory spoils 4x slower than a survivor's, like any tamed dino - the same as a normal trough</span></td>
+			<td><input ng-model="maeguana.points" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0"> &times;{{maeguanamultiplier(maeguana) | number:2}}</td>
+		</tr>
+		<tr ng-repeat="(food, stacks) in maeguana.stacks">
+			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana's inventory</span></td>
+			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('maeguana', food)}">{{requirementtext('maeguana', food)}}<span class="tooltiptext">With every other field as it is: the fewest stacks of {{food}} here for which no baby starves before adult (assumes nobody hand-feeds, and the shortest snap-back every time). &quot;Enough&quot; without a number: the other fields would cover it, but it does get eaten (the smallest food item goes first). &quot;Not needed&quot;: as things stand none of it gets eaten - it spoils first, or a food eaten before it lasts the whole way. &quot;Spoils too fast&quot;: no amount of it here is enough, because every stack spoils away before the babies grow up - it needs another food or a slower-spoiling container alongside</span></span></td>
 		</tr>
 	</table>
 	</div>

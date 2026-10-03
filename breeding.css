@@ -310,11 +310,6 @@
 			max-height: 1em;
 			overflow: hidden;
 		}
-		/* A heading inside a table that folds the rows under it. */
-		.sectiontoggle {
-			cursor: pointer;
-			user-select: none;
-		}
 		.troughhandle {
 			cursor: move;
 			flex: 1 1 auto;
