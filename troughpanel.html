@@ -39,7 +39,7 @@
 	<div class="tableslide" ng-hide="maeguana.collapsed">
 	<table>
 		<tr>
-			<td style="width: 36%" class="label tooltip">Food points:<span class="tooltiptext">The Maeguana's wild + tamed + mutation levels in Food. A Maeguana or Maewing with Nursing on, next to the trough. Leave its stacks at 0 if you have none. Babies (up to 100%) get 1.01^Food points out of every item they take from it. Under 10% a baby can only eat from the Maeguana, never the trough. For the same food, babies eat from the trough first. Its inventory spoils 4x slower than a survivor's, like any tamed dino - the same as a normal trough</span></td>
+			<td style="width: 36%" class="label tooltip">Food points:<span class="tooltiptext">Wild + tamed + mutation levels in Food</span></td>
 			<td><input ng-model="maeguana.points" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0"> &times;{{maeguanamultiplier(maeguana) | number:2}}</td>
 		</tr>
 		<tr ng-repeat="(food, stacks) in maeguana.stacks">
