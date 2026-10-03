@@ -2987,6 +2987,24 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		$scope.maeguana={points: 0, stacks: emptystacks()};
 	}
 
+	//The Maeguana rows fold away under their heading, for anyone who has none. Kept on the
+	//maeguana object so it is saved with its trough. Never chosen yet: closed, unless it
+	//already holds something. Folding only hides the rows - its food still counts.
+	$scope.maeguanaholdsfood=function() {
+		for (var food in $scope.maeguana.stacks) {
+			if ($scope.maeguana.stacks[food]>0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	if ($scope.maeguana.collapsed===undefined) {
+		$scope.maeguana.collapsed=!($scope.maeguana.points>0 || $scope.maeguanaholdsfood());
+	}
+	$scope.togglemaeguana=function() {
+		$scope.maeguana.collapsed=!$scope.maeguana.collapsed;
+	}
+
 	$scope.savetrough=function() {
 		//troughupdatefoodtypes replaces the troughstacks object wholesale, so re-point the
 		//trough at whatever the scope currently holds.

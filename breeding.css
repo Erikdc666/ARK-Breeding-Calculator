@@ -275,15 +275,15 @@
 		.panelbtn:hover {
 			opacity: 1;
 		}
-		/* Where the dragged column will land. */
-		.panelplaceholder {
-			flex: 0 0 420px;
-			min-width: 420px;
-			border: 2px dashed rgba(120, 220, 220, 0.6);
-			border-radius: 10px;
+		/* While dragging: the column being moved, and the edge it will land against. */
+		.panelcolumn.dragging {
+			opacity: 0.4;
 		}
-		.ui-sortable-helper {
-			opacity: 0.85;
+		.panelcolumn.dropleft {
+			box-shadow: -6px 0 0 -2px rgba(120, 220, 220, 0.8);
+		}
+		.panelcolumn.dropright {
+			box-shadow: 6px 0 0 -2px rgba(120, 220, 220, 0.8);
 		}
 
 		/* Trough columns are wider than creature columns: every food row carries a number
@@ -310,14 +310,15 @@
 			max-height: 1em;
 			overflow: hidden;
 		}
+		/* A heading inside a table that folds the rows under it. */
+		.sectiontoggle {
+			cursor: pointer;
+			user-select: none;
+		}
 		.troughhandle {
 			cursor: move;
 			flex: 1 1 auto;
 			user-select: none;
 			overflow: hidden;
 			text-overflow: ellipsis;
-		}
-		.troughrow .panelplaceholder {
-			flex: 0 0 540px;
-			min-width: 540px;
 		}

@@ -5,7 +5,7 @@
 			$locationProvider.html5Mode(true);
 
 			$routeProvider.when('/', {
-				templateUrl: 'breeding.html?d=20171020', controller: 'breedingController'
+				templateUrl: 'breeding.html?d=20261003', controller: 'breedingController'
 			}).
 			otherwise({
 				redirectTo: '/'
@@ -108,62 +108,93 @@
 
 		//Drag columns into a different order. Used by both the creature row and the trough
 		//row, so the list and the drag handle come from attributes rather than being baked
-		//in. jQuery UI is already loaded for the autocomplete, so this needs no new
-		//dependency.
+		//in. Uses the browser's own drag and drop: the bundled jQuery UI build only carries
+		//the autocomplete, not sortable.
 		//
-		//sortable('cancel') runs before the model is touched: Angular owns this DOM through
-		//ng-repeat, so letting both reorder it leaves the two disagreeing about which node
-		//is which. Cancel the DOM move, reorder the array, let ng-repeat re-render from the
-		//single source of truth.
-		breedingApp.directive('sortablelist', function() {
+		//The DOM is never moved here: Angular owns it through ng-repeat. Only the array is
+		//reordered, and ng-repeat re-renders from that single source of truth.
+		breedingApp.directive('sortableList', function() {
 			return {
 				link: function(scope, element, attrs) {
-					var from=null;
-					//Index among real columns only. ui.item.index() counts the drag
-					//placeholder as a sibling, which puts it out by one; the placeholder
-					//carries its own class, so filtering to .panelcolumn skips it.
-					function columnindex(item) {
-						return item.parent().children('.panelcolumn').index(item);
+					var row=jQuery(element);
+					var dragged=null; //The column being dragged; null when the drag is not ours
+					function columns() {
+						return row.children('.panelcolumn');
 					}
-					jQuery(element).sortable({
-						items: '> .panelcolumn',
-						handle: attrs.sortablehandle,
-						axis: 'x',
-						tolerance: 'pointer',
-						forcePlaceholderSize: true,
-						placeholder: 'panelplaceholder',
-						start: function(e, ui) {
-							from=columnindex(ui.item);
-						},
-						update: function(e, ui) {
-							var to=columnindex(ui.item);
-							jQuery(this).sortable('cancel');
-							if (from===null || to===from) {
-								return;
+					//Where the dragged column would land: its index among the *other* columns,
+					//counting those whose middle is left of the pointer.
+					function target(e) {
+						var others=columns().not(dragged), to=0;
+						others.each(function() {
+							var box=this.getBoundingClientRect();
+							if (e.originalEvent.clientX>box.left+box.width/2) {
+								to++;
 							}
-							scope.$apply(function() {
-								//from/to index the *expanded* columns, because collapsed
-								//ones are rendered in the tray and are not in this row at
-								//all. Reorder within the slots the expanded items occupy,
-								//so collapsed ones keep their place in the underlying list.
-								var list=scope[attrs.sortablelist];
-								var slots=[];
-								for (var i=0; i<list.length; i++) {
-									if (!list[i].collapsed) {
-										slots.push(i);
-									}
-								}
-								var expanded=[];
-								for (var k=0; k<slots.length; k++) {
-									expanded.push(list[slots[k]]);
-								}
-								expanded.splice(to, 0, expanded.splice(from, 1)[0]);
-								for (var j=0; j<slots.length; j++) {
-									list[slots[j]]=expanded[j];
-								}
-							});
-							from=null;
+						});
+						return {others: others, to: to};
+					}
+					function clearmarks() {
+						columns().removeClass('dropleft dropright dragging');
+					}
+					row.on('dragstart', attrs.sortableHandle, function(e) {
+						dragged=jQuery(this).closest('.panelcolumn');
+						var transfer=e.originalEvent.dataTransfer;
+						transfer.effectAllowed='move';
+						transfer.setData('text/plain', ''); //Firefox starts no drag without data
+						if (transfer.setDragImage) {
+							transfer.setDragImage(dragged[0], 20, 10);
 						}
+						dragged.addClass('dragging');
+					});
+					row.on('dragover', function(e) {
+						if (!dragged) {
+							return; //Something else is being dragged over us, e.g. the other row's column
+						}
+						e.preventDefault();
+						var t=target(e);
+						columns().removeClass('dropleft dropright');
+						if (t.to<t.others.length) {
+							t.others.eq(t.to).addClass('dropleft');
+						} else {
+							t.others.last().addClass('dropright');
+						}
+					});
+					row.on('drop', function(e) {
+						if (!dragged) {
+							return;
+						}
+						e.preventDefault();
+						var from=columns().index(dragged), to=target(e).to;
+						clearmarks();
+						dragged=null;
+						if (to===from) {
+							return;
+						}
+						scope.$apply(function() {
+							//from/to index the *expanded* columns, because collapsed
+							//ones are rendered in the tray and are not in this row at
+							//all. Reorder within the slots the expanded items occupy,
+							//so collapsed ones keep their place in the underlying list.
+							var list=scope[attrs.sortableList];
+							var slots=[];
+							for (var i=0; i<list.length; i++) {
+								if (!list[i].collapsed) {
+									slots.push(i);
+								}
+							}
+							var expanded=[];
+							for (var k=0; k<slots.length; k++) {
+								expanded.push(list[slots[k]]);
+							}
+							expanded.splice(to, 0, expanded.splice(from, 1)[0]);
+							for (var j=0; j<slots.length; j++) {
+								list[slots[j]]=expanded[j];
+							}
+						});
+					});
+					row.on('dragend', function() {
+						clearmarks();
+						dragged=null;
 					});
 				}
 			}

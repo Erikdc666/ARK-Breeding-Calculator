@@ -22,7 +22,7 @@
 	<div class="panelrow" sortable-list="panels" sortable-handle=".panelhandle">
 		<div class="panelcolumn" ng-repeat="panel in panels | filter:expandedonly">
 			<div class="panelhead">
-				<span class="panelhandle" title="Drag to reorder">&#9776; {{panel.name || 'Creature'}}<span ng-show="panel.collapsed && panel.maturation"> &middot; {{panel.maturation | percentage}}%</span></span>
+				<span class="panelhandle" draggable="true" title="Drag to reorder">&#9776; {{panel.name || 'Creature'}}<span ng-show="panel.collapsed && panel.maturation"> &middot; {{panel.maturation | percentage}}%</span></span>
 				<a class="panelbtn" ng-click="panel.collapsed=!panel.collapsed" title="{{panel.collapsed ? 'Expand' : 'Collapse to a button'}}"><span ng-hide="panel.collapsed">&minus;</span><span ng-show="panel.collapsed">+</span></a>
 				<a class="panelbtn" ng-show="panels.length>1" ng-click="removepanel(panel)" title="Close this creature">&times;</a>
 			</div>
@@ -47,12 +47,12 @@
 	<div class="panelrow troughrow" sortable-list="troughs" sortable-handle=".troughhandle">
 		<div class="panelcolumn troughcolumn" ng-repeat="trough in troughs | filter:expandedonly">
 			<div class="panelhead">
-				<span class="troughhandle" title="Drag to reorder">&#9776; {{trough.name}}<span ng-show="trough.collapsed && trough.creaturelist.length"> &middot; {{trough.creaturelist.length}}</span></span>
+				<span class="troughhandle" draggable="true" title="Drag to reorder">&#9776; {{trough.name}}<span ng-show="trough.collapsed && trough.creaturelist.length"> &middot; {{trough.creaturelist.length}}</span></span>
 				<a class="panelbtn" ng-click="renametrough(trough)" title="Rename">&#9998;</a>
 				<a class="panelbtn" ng-click="trough.collapsed=!trough.collapsed" title="{{trough.collapsed ? 'Expand' : 'Collapse to a button'}}"><span ng-hide="trough.collapsed">&minus;</span><span ng-show="trough.collapsed">+</span></a>
 				<a class="panelbtn" ng-show="troughs.length>1" ng-click="removetrough(trough)" title="Close this trough">&times;</a>
 			</div>
-			<div ng-controller="breedingController" ng-include="'troughpanel.html?d=20260818'"></div>
+			<div ng-controller="breedingController" ng-include="'troughpanel.html?d=20261003'"></div>
 		</div>
 	</div>
 	</div>
