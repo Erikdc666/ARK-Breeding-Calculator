@@ -2887,7 +2887,12 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	function readstore(store, key) {
 		try {
 			var raw=window[store].getItem(key);
-			return raw ? JSON.parse(raw) : undefined;
+			//Drop Angular's ng-repeat tracking keys from anything stored before they were
+			//kept out (see writestore): a stored key can equal one handed out afresh in
+			//this session, and ng-repeat then refuses to draw the whole list.
+			return raw ? JSON.parse(raw, function(name, value) {
+				return name=='$$hashKey' ? undefined : value;
+			}) : undefined;
 		} catch (e) {
 			return undefined; //Private mode, disabled storage, or corrupt JSON - use defaults
 		}
@@ -2895,7 +2900,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 	function writestore(store, key, value) {
 		try {
-			window[store].setItem(key, JSON.stringify(value));
+			//toJson rather than JSON.stringify: it leaves out the $$hashKey that ng-repeat
+			//puts on every row, which must not outlive the session it was handed out in.
+			window[store].setItem(key, angular.toJson(value));
 		} catch (e) {
 			//Storage unavailable or full; the page still works, it just will not remember
 		}
