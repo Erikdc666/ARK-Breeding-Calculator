@@ -4158,8 +4158,10 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 						times[$scope.creatures[simcreature.name].type]=time;
 						runtype.eaten=(runtype.eaten || 0)+taken;
 						eatenfood+=taken;
-						eatenpoints+=(gain-overflow)*taken;
-						wastedpoints+=(waste*wastemult+overflow)*taken;
+						//The part above the baby's cap is not counted as loss: it was eaten, and
+						//Loss is about spoilage (and cooking), as in the original calculator.
+						eatenpoints+=gain*taken;
+						wastedpoints+=waste*wastemult*taken;
 						simcreature.hunger-=gain-overflow;
 						if (overflow>0) {
 							//Until the baby-age update cuts it back (4 s + 0-60 s random) it sits
