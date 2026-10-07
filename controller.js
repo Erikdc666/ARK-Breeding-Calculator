@@ -3679,7 +3679,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		var r=$scope.requirements[source][food];
 		if (!r) return '';
 		if (r.pending) return '(...)';
-		if (r.never) return '(spoils too fast)'; //Even 20000 stacks run out: every stack spoils away before they grow up
+		//Even 20000 stacks run out: every stack spoils away before they grow up
+		if (r.never) return r.useful>0 ? '(spoils too fast, max '+r.useful+')' : '(spoils too fast, no use)';
 		//Zero would do. If it is being eaten anyway (lowest food value first) it is simply
 		//"enough"; "not needed" is kept for food nobody touches.
 		if (r.need==0) return r.used ? '(enough)' : '(not needed)';
@@ -3692,11 +3693,26 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		var r=$scope.requirements[source][food];
 		if (!r) return '';
 		if (r.pending) return 'Calculating.';
-		if (r.never) return 'Spoils before the babies grow up, however much you add. Add another food or use a slower-spoiling trough.';
+		if (r.never) {
+			var tip='Spoils before the babies grow up, however much you add. ';
+			if (r.useful>0) {
+				tip+='Up to '+r.useful+' stacks here get eaten in time and keep every baby fed for '+duration(r.until)+'; more than that only spoils. ';
+			} else {
+				tip+='With the other foods as they are, none of it gets a baby any further. ';
+			}
+			return tip+'Add another food or use a slower-spoiling trough.';
+		}
 		if (r.need==0) return r.used ? 'The other foods already cover it, but this one gets eaten too.' : 'None of this gets eaten: it spoils first or another food lasts the whole way.';
 		if (r.current>=r.need) return r.need+' stacks here is enough for every baby to reach adult.';
 		return r.need+' stacks here and no baby starves before adult. '+Math.ceil(r.need-r.current)+' more to go.';
 	}
+	//Seconds as the page shows them elsewhere: 1d:02:10:33
+	function duration(seconds) {
+		function two(n) { return (n<10 ? '0' : '')+n; }
+		var days=Math.floor(seconds/86400);
+		return (days>0 ? days+'d:' : '')+two(Math.floor(seconds%86400/3600))+':'+two(Math.floor(seconds%3600/60))+':'+two(Math.floor(seconds%60));
+	}
+
 	$scope.requirementcolor=function(source, food) {
 		var r=$scope.requirements[source][food];
 		if (!r || r.pending) return '';
@@ -3742,15 +3758,49 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			}
 		}
 
-		function survives(source, food, amount) {
+		//When the first baby this field can feed starves, with this many stacks in it; Infinity
+		//when none does.
+		function firststarve(source, food, amount) {
 			var tr=angular.copy(basetrough), mg=angular.copy(basemaeguana);
 			(source=='trough' ? tr : mg.stacks)[food]=amount;
 			//Only the babies this field can feed: ones that eat this food, and for a trough
 			//field only from 10% on - under that they cannot reach it, which is the Maeguana's
 			//job (and shows in the starvation lines).
-			return $scope.troughsim(creaturelist, tr, troughmultiplier, mg, {survival: true, counts: function(c, maturation) {
+			var starving=$scope.troughsim(creaturelist, tr, troughmultiplier, mg, {survival: true, counts: function(c, maturation) {
 				return c.foods.indexOf(food)>-1 && (source=='maeguana' || maturation>=0.1);
-			}}).starving.length==0;
+			}}).starving;
+			return starving.length ? starving[0].time : Infinity; //Sorted, so the first is the earliest
+		}
+
+		function survives(source, food, amount) {
+			return firststarve(source, food, amount)==Infinity;
+		}
+
+		//For a food that spoils too fast to ever be enough: how many stacks still do some
+		//good. More of it keeps the babies fed for longer only up to a point - every stack
+		//spoils at the same time, so past what they can eat before then the rest just rots.
+		//That point is the fewest stacks that get them as far as a huge pile would, with the
+		//other foods as they are and eaten in the order the game picks.
+		function useful(source, food) {
+			var best=firststarve(source, food, 20000);
+			if (firststarve(source, food, 0)>=best) {
+				return {useful: 0, until: best};
+			}
+			var lo=0, hi=20000;
+			while (hi-lo>1) {
+				var mid=Math.floor((lo+hi)/2);
+				if (firststarve(source, food, mid)>=best) {
+					hi=mid;
+				} else {
+					lo=mid;
+				}
+			}
+			return {useful: hi, until: best};
+		}
+
+		function never(field, current) {
+			var u=useful(field.source, field.food);
+			return {never: true, current: current, useful: u.useful, until: u.until};
 		}
 
 		//A food solved earlier for the same babies gives a starting guess for the next one:
@@ -3782,7 +3832,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				//One sim with a huge amount first: if even that cannot save them, this food
 				//here is not the fix, and there is no point searching up to it.
 				if (!(guesses[guesskey]>0) && !survives(field.source, field.food, 20000)) {
-					return {never: true, current: current};
+					return never(field, current);
 				}
 				lo=Math.floor(current);
 				var guess=guesses[guesskey] ? Math.ceil(guesses[guesskey]/stackpoints) : 0;
@@ -3804,7 +3854,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					lo=hi;
 					hi*=2;
 					if (hi>20000) {
-						return {never: true, current: current}; //Spoils too fast: no amount of this food here lasts
+						return never(field, current); //Spoils too fast: no amount of this food here lasts
 					}
 				}
 			}
