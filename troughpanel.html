@@ -1,0 +1,90 @@
+	<div class="tableheader slide" ng-class="{'dimmed': !tablevisibility['Trough']}" ng-click="showhidetable('Trough')">Trough Calculator - Food</div>
+	<div class="tableslide" ng-show="tablevisibility['Trough']">
+	<table>
+		<tr>
+			<td style="width: 36%" class="label tooltip">Prim+ Stacksizes:<span class="tooltiptext">Check this if you are on Prim+ using the old stack sizes</span></td>
+			<td><input ng-model="settings.stackSize" ng-change="changeStackSize()" type="checkbox"></td>
+		</tr>
+		<tr>
+			<td style="width: 36%" class="label tooltip">Trough Type:<span class="tooltiptext">Sets the spoil rate of the food based on the container you will use, Tek=100x, Normal=4x, Clicker=1x</span></td>
+			<td><select ng-options="type as type for (type, multi) in troughtypes" ng-model="settings.troughtype" ng-change="selectsettings()"></select></td>
+		</tr>
+		<tr>
+			<td colspan="2" class="label" style="text-align: center; padding-top: 6px">In the {{settings.troughtype}} trough</td>
+		</tr>
+		<tr ng-repeat="(food, stacks) in troughstacks">
+			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the trough.</span></td>
+			<td><input ng-model="troughstacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('trough', food)}">{{requirementtext('trough', food)}}<span class="tooltiptext">{{requirementtip('trough', food)}}</span></span></td>
+		</tr>
+		<tr ng-repeat="(type, time) in troughdata.times">
+			<td style="width: 36%" class="label tooltip">{{type}}:<span class="tooltiptext">How long {{type}}s will have food in the current configuration</span></td>
+			<td>{{time | secondsToDateTime}}</td>
+		</tr>
+		<tr ng-repeat="starve in troughdata.starving">
+			<td style="width: 36%; color: #ff8a80" class="label tooltip">&#9888; {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> starves<span class="tooltiptext">Food hits 0 at {{starve.maturation*100 | number:1}}% maturation if nobody hand-feeds.</span></td>
+			<td style="color: #ff8a80">in {{starve.time | secondsToDateTime}} ({{starve.maturation*100 | number:1}}%)</td>
+		</tr>
+		<tr ng-show="troughdata.starving && troughdata.starving.length==0 && creaturelist.length>0">
+			<td style="width: 36%" class="label">Starvation</td>
+			<td>None - every baby reaches adult</td>
+		</tr>
+		<tr>
+			<td style="width: 36%" class="label tooltip">Loss<span class="tooltiptext">Amount of food points to spoilage, cooking meat is automatic 50% loss</span></td>
+			<td>{{(troughdata.spoiledpoints+troughdata.wastedpoints)/troughdata.totalpoints*100 | number:1}}%</td>
+		</tr>
+	</table>
+	</div>
+
+	<div class="tableheader slide" ng-class="{'dimmed': maeguana.collapsed}" ng-click="togglemaeguana()">Trough Calculator - Nursing Maeguana<span ng-show="maeguana.collapsed && maeguanaholdsfood()"> (holds food, still counted)</span></div>
+	<div class="tableslide" ng-hide="maeguana.collapsed">
+	<table>
+		<tr>
+			<td style="width: 36%" class="label tooltip">Food points:<span class="tooltiptext">Wild + tamed + mutation levels in Food</span></td>
+			<td><input ng-model="maeguana.points" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0"> &times;{{maeguanamultiplier(maeguana) | number:2}}</td>
+		</tr>
+		<tr ng-repeat="(food, stacks) in maeguana.stacks">
+			<td style="width: 36%" class="label tooltip">{{food}}<span class="tooltiptext">Stacks of {{foods[food].stack}} {{food}} in the Maeguana. Babies under 10% can only eat from here.</span></td>
+			<td><input ng-model="maeguana.stacks[food]" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"> Stacks <span class="tooltip requirement" ng-style="{color: requirementcolor('maeguana', food)}">{{requirementtext('maeguana', food)}}<span class="tooltiptext">{{requirementtip('maeguana', food)}}</span></span></td>
+		</tr>
+	</table>
+	</div>
+
+	<div class="tableheader slide" ng-class="{'dimmed': !tablevisibility['TroughCreatures']}" ng-click="showhidetable('TroughCreatures')">Trough Calculator - Creatures</div>
+	<div class="tableslide" ng-show="tablevisibility['TroughCreatures']">
+	<table>
+		<thead>
+			<td>Creature</td>
+			<td>Maturation</td>
+			<td>Quantity</td>
+			<td>Remove</td>
+		</thead>
+		<tr>
+			<td><input type="button" ng-click="troughaddcreature()" value="Add Creature">
+				<input type="button" ng-click="addallcreatures()" value="Add All Tracked" title="Add one row for every creature panel above, at the maturation it is showing"></td>
+		</tr>
+		<tr ng-repeat="(index, troughcreature) in creaturelist">
+			<td><select ng-options="name as name for (name, details) in creatures" ng-model="troughcreature.name" ng-change="troughupdatefoodtypes();troughcalc()"></select></td>
+			<td><input ng-model="troughcreature.maturation" ng-change="troughcalc()" ng-model-options="{debounce: 300}" percentage type="number" step="0.1"></td>
+			<td><input ng-model="troughcreature.quantity" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"></td>
+			<td><input type="button" ng-click="troughremovecreature(index)" value="Remove"></td>
+		</tr>
+		<tr>
+			<td colspan="4" class="label tooltip" style="text-align: center; padding-top: 6px">Time went by<span class="tooltiptext">Fill in one baby's current maturation and press Apply: all rows grow by the same time and the food left is estimated. Undo puts it back.</span></td>
+		</tr>
+		<tr>
+			<td><select ng-options="creaturelist.indexOf(row) as elapsedlabel(row) for row in creaturelist" ng-model="elapsed.row"></select></td>
+			<td><input ng-model="elapsed.maturation" percentage type="number" step="0.1" placeholder="now %"></td>
+			<td><input type="button" ng-click="timewentby()" value="Apply"></td>
+			<td><input type="button" ng-click="timewentbyundo()" ng-disabled="!elapsed.undo" value="Undo"></td>
+		</tr>
+		<tr ng-show="elapsed.error">
+			<td colspan="4" style="color: #ff8a80">{{elapsed.error}}</td>
+		</tr>
+		<tr ng-show="elapsed.done">
+			<td colspan="4">{{elapsed.done.seconds | secondsToDateTime}} went by: {{elapsed.done.eaten | number:0}} items eaten, {{elapsed.done.spoiled | number:0}} spoiled</td>
+		</tr>
+		<tr ng-repeat="starve in elapsed.done.starving">
+			<td colspan="4" style="color: #ff8a80">&#9888; By this estimate {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> had nothing to eat from {{starve.time | secondsToDateTime}} in - it got by some other way, so what is left is less certain</td>
+		</tr>
+	</table>
+	</div>

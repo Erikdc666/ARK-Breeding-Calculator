@@ -5,7 +5,7 @@
 			$locationProvider.html5Mode(true);
 
 			$routeProvider.when('/', {
-				templateUrl: 'breeding.html?d=20171020', controller: 'breedingController'
+				templateUrl: 'breeding.html?d=20261007', controller: 'breedingController'
 			}).
 			otherwise({
 				redirectTo: '/'
@@ -106,12 +106,124 @@
 			}
 		}]);
 
+		//A tooltip follows the cursor: to its right when that fits in the window, else to
+		//its left; downwards from the cursor's line, or upwards when there is no room below.
+		jQuery(document).on('mouseenter mousemove', '.tooltip', function(e) {
+			var tip=jQuery(this).children('.tooltiptext');
+			if (!tip.length) {
+				return;
+			}
+			var width=tip.outerWidth(), height=tip.outerHeight(), gap=14, margin=8;
+			var left=e.clientX+gap, top=e.clientY;
+			if (left+width>window.innerWidth-margin) {
+				left=e.clientX-gap-width;
+			}
+			if (top+height>window.innerHeight-margin) {
+				top=e.clientY-height;
+			}
+			tip.css({left: Math.max(margin, left)+'px', top: Math.max(margin, top)+'px'});
+		});
+
+		//Drag columns into a different order. Used by both the creature row and the trough
+		//row, so the list and the drag handle come from attributes rather than being baked
+		//in. Uses the browser's own drag and drop: the bundled jQuery UI build only carries
+		//the autocomplete, not sortable.
+		//
+		//The DOM is never moved here: Angular owns it through ng-repeat. Only the array is
+		//reordered, and ng-repeat re-renders from that single source of truth.
+		breedingApp.directive('sortableList', function() {
+			return {
+				link: function(scope, element, attrs) {
+					var row=jQuery(element);
+					var dragged=null; //The column being dragged; null when the drag is not ours
+					function columns() {
+						return row.children('.panelcolumn');
+					}
+					//Where the dragged column would land: its index among the *other* columns,
+					//counting those whose middle is left of the pointer.
+					function target(e) {
+						var others=columns().not(dragged), to=0;
+						others.each(function() {
+							var box=this.getBoundingClientRect();
+							if (e.originalEvent.clientX>box.left+box.width/2) {
+								to++;
+							}
+						});
+						return {others: others, to: to};
+					}
+					function clearmarks() {
+						columns().removeClass('dropleft dropright dragging');
+					}
+					row.on('dragstart', attrs.sortableHandle, function(e) {
+						dragged=jQuery(this).closest('.panelcolumn');
+						var transfer=e.originalEvent.dataTransfer;
+						transfer.effectAllowed='move';
+						transfer.setData('text/plain', ''); //Firefox starts no drag without data
+						if (transfer.setDragImage) {
+							transfer.setDragImage(dragged[0], 20, 10);
+						}
+						dragged.addClass('dragging');
+					});
+					row.on('dragover', function(e) {
+						if (!dragged) {
+							return; //Something else is being dragged over us, e.g. the other row's column
+						}
+						e.preventDefault();
+						var t=target(e);
+						columns().removeClass('dropleft dropright');
+						if (t.to<t.others.length) {
+							t.others.eq(t.to).addClass('dropleft');
+						} else {
+							t.others.last().addClass('dropright');
+						}
+					});
+					row.on('drop', function(e) {
+						if (!dragged) {
+							return;
+						}
+						e.preventDefault();
+						var from=columns().index(dragged), to=target(e).to;
+						clearmarks();
+						dragged=null;
+						if (to===from) {
+							return;
+						}
+						scope.$apply(function() {
+							//from/to index the *expanded* columns, because collapsed
+							//ones are rendered in the tray and are not in this row at
+							//all. Reorder within the slots the expanded items occupy,
+							//so collapsed ones keep their place in the underlying list.
+							var list=scope[attrs.sortableList];
+							var slots=[];
+							for (var i=0; i<list.length; i++) {
+								if (!list[i].collapsed) {
+									slots.push(i);
+								}
+							}
+							var expanded=[];
+							for (var k=0; k<slots.length; k++) {
+								expanded.push(list[slots[k]]);
+							}
+							expanded.splice(to, 0, expanded.splice(from, 1)[0]);
+							for (var j=0; j<slots.length; j++) {
+								list[slots[j]]=expanded[j];
+							}
+						});
+					});
+					row.on('dragend', function() {
+						clearmarks();
+						dragged=null;
+					});
+				}
+			}
+		});
+
 		breedingApp.directive('percentage', function() {
 			return {
 				require: 'ngModel',
 				link: function(scope, element, attrs, ngModel) {
 					ngModel.$formatters.push(function(value) {
-						return value*100;
+						return Math.round(value*1e6)/1e4; //Not value*100: 0.3263*100 shows as 32.629999999999995
 					});
 
 					ngModel.$parsers.push(function(value) {
