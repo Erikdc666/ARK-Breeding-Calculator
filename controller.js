@@ -2628,7 +2628,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			eggspeed: 0.005556,
 			eggspeedmult: 1,
 			weight: 150,
-			food: 3250
+			food: 900
 		},
 		
 		Triceratops: { //
