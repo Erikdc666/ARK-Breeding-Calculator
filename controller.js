@@ -4168,6 +4168,12 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 						var taken=0, waste=stacks[currentstack]['waste'];
 						while (taken<simcreature.count && runtype.cursor<=runtype.last) {
 							var st=stacks[runtype.cursor];
+							if (st['stacksize']<=0) {
+								//Already emptied by spoilage, and counted off then. Counting it
+								//again below would end the sim with food still in the trough
+								runtype.cursor++;
+								continue;
+							}
 							var bite=Math.min(st['stacksize'], simcreature.count-taken);
 							st['stacksize']-=bite;
 							taken+=bite;
