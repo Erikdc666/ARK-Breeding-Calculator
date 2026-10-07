@@ -94,10 +94,6 @@
 	<div class="tableslide" ng-show="tablevisibility['Baby']">
 	<table>
 		<tr>
-			<td style="width: 50%" class="label tooltip">Food Reserve:<span class="tooltiptext">Food points the baby has in its own Food stat right now.</span></td>
-			<td>{{creature.currentfood | number:0}} pt</td>
-		</tr>
-		<tr>
 			<td style="width: 50%" class="label tooltip">Time Without Food:<span class="tooltiptext">Survival time on its own Food stat, with an empty inventory and no trough.</span></td>
 			<td>{{creature.foodreservetime | secondsToDateTime}}</td>
 		</tr>
