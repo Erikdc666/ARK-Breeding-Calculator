@@ -245,6 +245,23 @@
 			flex: 1 1 auto;
 			min-width: 0;
 		}
+		/* The sideways scrollbar in the page's own colours: the browser's default is a
+		   light grey bar across the whole box, on top of the background picture. */
+		.panelrow {
+			scrollbar-color: rgba(120, 220, 220, 0.5) rgba(40, 100, 100, 0.3);
+			scrollbar-width: thin;
+		}
+		.panelrow::-webkit-scrollbar {
+			height: 10px;
+		}
+		.panelrow::-webkit-scrollbar-track {
+			background: rgba(40, 100, 100, 0.3);
+			border-radius: 5px;
+		}
+		.panelrow::-webkit-scrollbar-thumb {
+			background: rgba(120, 220, 220, 0.5);
+			border-radius: 5px;
+		}
 		.panelcolumn {
 			flex: 0 0 420px;
 			min-width: 420px;
