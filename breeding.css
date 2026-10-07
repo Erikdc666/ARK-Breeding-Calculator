@@ -312,6 +312,11 @@
 		.requirement {
 			white-space: nowrap;
 		}
+		/* Food now in a trough row: narrower than the other number fields, so the fifth
+		   column still fits the trough column without a scrollbar of its own. */
+		input[type=number].foodnow {
+			width: 48px;
+		}
 		/* The tooltip inside it must still wrap: on one line it is thousands of pixels
 		   wide and gives the trough row a scrollbar to nowhere. */
 		.requirement .tooltiptext {

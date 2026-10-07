@@ -3132,6 +3132,17 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		return adultfood*(babyfoodfloor+(1-babyfoodfloor)*maturation);
 	}
 
+	//A number typed into a "Food now" field; an empty field (the baby is full) is not one
+	function entered(value) {
+		return typeof value=='number' && !isNaN(value);
+	}
+
+	//Food the creature is holding right now: what Food now says, or full when that is empty
+	function carriedfood(creature) {
+		creature.foodcapacity=babyfoodcapacity(creature.finalfood, creature.maturationprogress);
+		return entered(creature.foodnow) ? validatenumber(creature.foodnow, 0, creature.foodcapacity) : creature.foodcapacity;
+	}
+
 	function validatenumber(number, min, max) {
 		if (isNaN(number)) {
 			return min;
@@ -3234,6 +3245,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		creature.finalweight=creaturedata.weight;
 		creature.currentweight=0;
 		creature.finalfood=bredfood(creaturedata);
+		creature.foodnow=null; //Another creature: what the last one was holding says nothing
 		creature.currentfood=0;
 		creature.maxfoodrate=creaturedata.basefoodrate*creaturedata.babyfoodrate*creaturedata.extrababyfoodrate*$scope.settings.consumptionspeed;
 		creature.minfoodrate=$scope.settings.baseminfoodrate*creaturedata.babyfoodrate*creaturedata.extrababyfoodrate*$scope.settings.consumptionspeed;
@@ -3259,6 +3271,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		creature.finalweight=creaturedata.weight;
 		creature.currentweight=0;
 		creature.finalfood=bredfood(creaturedata);
+		creature.foodnow=null; //Another creature: what the last one was holding says nothing
 		creature.currentfood=0;
 		creature.desiredbabybuffer=30;
 		creature.maturationprogress=0;
@@ -3345,10 +3358,11 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			//Mirror into the shared panel object: the shell reads it for Add All, and its
 			//deep watch persists it so a reload restores where each column had got to.
 			$scope.panel.maturation=creature.maturationprogress;
+			$scope.panel.foodnow=creature.foodnow;
 		}
 
 		creature.currentweight=creature.finalweight*creature.maturationprogress;
-		creature.currentfood=babyfoodcapacity(creature.finalfood, creature.maturationprogress);
+		creature.currentfood=carriedfood(creature);
 
 		$scope.maturationcalc();
 	}
@@ -3399,7 +3413,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	$scope.foodreservecalc=function() {
 		creature=$scope.creature;
 		creaturedata=$scope.creatures[creature.name];
-		creature.currentfood=babyfoodcapacity(creature.finalfood, creature.maturationprogress);
+		creature.currentfood=carriedfood(creature);
 
 		//How long the creature's own Food stat keeps it alive with nothing else to eat.
 		//Drain is linear in elapsed time (rate = maxfoodrate - decay*t), so the food burnt
@@ -3619,6 +3633,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		$scope.creaturelist.push({
 			name: seed ? seed.name : $scope.creature.name,
 			maturation: seed ? (seed.maturation || 0) : $scope.creature.maturationprogress,
+			foodnow: seed && entered(seed.foodnow) ? seed.foodnow : null,
 			quantity: 1
 		});
 		$scope.troughupdatefoodtypes();
@@ -3638,11 +3653,18 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 			$scope.creaturelist.push({
 				name: $scope.panels[i].name,
 				maturation: $scope.panels[i].maturation || 0,
+				foodnow: entered($scope.panels[i].foodnow) ? $scope.panels[i].foodnow : null,
 				quantity: 1
 			});
 		}
 		$scope.troughupdatefoodtypes();
 		$scope.troughcalc();
+	}
+
+	//What a baby in this trough row holds when full, shown next to its Food now field
+	$scope.rowfoodcapacity=function(row) {
+		var data=$scope.creatures[row.name];
+		return data ? babyfoodcapacity(bredfood(data), validatenumber(row.maturation, 0, 1)) : 0;
 	}
 
 	$scope.troughremovecreature=function(index) {
@@ -3716,6 +3738,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		for (var i=0;i<$scope.creaturelist.length;i++) {
 			var row=$scope.creaturelist[i];
 			row.maturation=row===ref ? to : Math.min(1, Math.round((row.maturation+seconds/maturationtime(row.name))*10000)/10000);
+			//What the sim says it is holding by now, so the next estimate starts from
+			//there instead of from a full baby
+			row.foodnow=(row.maturation>=1 || !entered(result.foodleft[i])) ? null : Math.round(result.foodleft[i]);
 		}
 		for (var food in $scope.troughstacks) {
 			$scope.troughstacks[food]=result.remaining.trough[food] || 0;
@@ -4125,6 +4150,10 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				//per-second loop does a multiply-add instead of calling out.
 				newcreature.capbase=babyfoodcapacity(newcreature.adultfood, newcreature.maturation);
 				newcreature.capslope=newcreature.adultfood*(1-babyfoodfloor)/newcreature.maturationtime;
+				if (entered(creaturelist[i].foodnow)) {
+					//A trough row with Food now filled in: it starts that far below full
+					newcreature.hunger=newcreature.capbase-validatenumber(creaturelist[i].foodnow, 0, newcreature.capbase);
+				}
 				newcreature.troughfrom=(0.1-newcreature.maturation)*newcreature.maturationtime;
 				newcreature.snapwait=0;
 				newcreature.foods=$scope.foodlists[$scope.creatures[name].type];
@@ -4374,6 +4403,21 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 		}
 
+		//Food each row's babies hold at the end, for Time went by. A row whose babies ended up
+		//apart (some got the last items, some did not) gives its lowest; null once adult.
+		var foodleft={};
+		for (i=0;i<troughcreatures.length;i++) {
+			var c=troughcreatures[i];
+			if (c.foodrate<c.minfoodrate) {
+				foodleft[c.row]=null;
+				continue;
+			}
+			var left=Math.max(0, Math.min(c.adultfood, c.capbase+c.capslope*time)-Math.max(0, c.hunger));
+			if (foodleft[c.row]===undefined || (foodleft[c.row]!==null && left<foodleft[c.row])) {
+				foodleft[c.row]=left;
+			}
+		}
+
 		//Who starves, per creature row. Babies still alive when the food runs out would starve
 		//afterwards too: step them on (a minute at a time is plenty) until they either grow up
 		//or hit empty, so the report covers them as well.
@@ -4430,6 +4474,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 
 		output={
 			starving: starving,
+			foodleft: foodleft,
 			remaining: remaining,
 			used: usedfood,
 			time: time,
@@ -4506,6 +4551,7 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	var restoredmaturation=($scope.panel && $scope.panel.maturation>0) ? $scope.panel.maturation : 0;
 	var restoredweight=($scope.panel && $scope.panel.finalweight>0) ? $scope.panel.finalweight : 0;
 	var restoredfood=($scope.panel && $scope.panel.finalfood>0) ? $scope.panel.finalfood : 0;
+	var restoredfoodnow=($scope.panel && entered($scope.panel.foodnow)) ? $scope.panel.foodnow : null;
 	$scope.switchcreature();
 	if (restoredweight>0) {
 		$scope.creature.finalweight=restoredweight;
@@ -4518,7 +4564,10 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	if (restoredmaturation>0) {
 		$scope.creature.maturationprogress=restoredmaturation;
 	}
-	if (restoredweight>0 || restoredfood>0 || restoredmaturation>0) {
+	if (restoredfoodnow!==null) {
+		$scope.creature.foodnow=restoredfoodnow;
+	}
+	if (restoredweight>0 || restoredfood>0 || restoredmaturation>0 || restoredfoodnow!==null) {
 		$scope.selectweight(); //Recalculates everything off the restored values
 	}
 	$scope.troughupdatefoodtypes();

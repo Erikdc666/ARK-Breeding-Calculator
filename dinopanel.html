@@ -51,7 +51,7 @@
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Maturation:<span class="tooltiptext">Maturation progress of creature you want stats for</span></td>
-			<td><input ng-model="creature.maturationprogress" ng-change="selectmaturation()" percentage type="number" step="0.1" min="0" max="100">%</td>
+			<td><input ng-model="creature.maturationprogress" ng-change="creature.foodnow=null; selectmaturation()" percentage type="number" step="0.1" min="0" max="100">%</td>
 		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Elapsed Time:<span class="tooltiptext">Time elapsed since birth</span></td>
@@ -93,6 +93,10 @@
 	<div class="tableheader slide" ng-class="{'dimmed': !tablevisibility['Baby']}" ng-click="showhidetable('Baby')">Baby Phase</div>
 	<div class="tableslide" ng-show="tablevisibility['Baby']">
 	<table>
+		<tr>
+			<td style="width: 50%" class="label tooltip">Food now:<span class="tooltiptext">What its Food reads in game right now, out of what a baby this far along can hold. Leave empty if it is full.</span></td>
+			<td><input ng-model="creature.foodnow" ng-change="selectweight()" type="number" min="0" placeholder="full"> / {{creature.foodcapacity | number:0}}</td>
+		</tr>
 		<tr>
 			<td style="width: 50%" class="label tooltip">Time Without Food:<span class="tooltiptext">Survival time on its own Food stat, with an empty inventory and no trough.</span></td>
 			<td>{{creature.foodreservetime | secondsToDateTime}}</td>

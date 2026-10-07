@@ -56,35 +56,38 @@
 			<td>Creature</td>
 			<td>Maturation</td>
 			<td>Quantity</td>
+			<td class="tooltip">Food now<span class="tooltiptext">What its Food reads in game right now, out of what a baby this far along can hold. Leave empty if it is full.</span></td>
 			<td>Remove</td>
 		</thead>
 		<tr>
-			<td><input type="button" ng-click="troughaddcreature()" value="Add Creature">
+			<td colspan="5" style="text-align: left"><input type="button" ng-click="troughaddcreature()" value="Add Creature">
 				<input type="button" ng-click="addallcreatures()" value="Add All Tracked" title="Add one row for every creature panel above, at the maturation it is showing"></td>
 		</tr>
 		<tr ng-repeat="(index, troughcreature) in creaturelist">
-			<td><select ng-options="name as name for (name, details) in creatures" ng-model="troughcreature.name" ng-change="troughupdatefoodtypes();troughcalc()"></select></td>
-			<td><input ng-model="troughcreature.maturation" ng-change="troughcalc()" ng-model-options="{debounce: 300}" percentage type="number" step="0.1"></td>
+			<td><select ng-options="name as name for (name, details) in creatures" ng-model="troughcreature.name" ng-change="troughcreature.foodnow=null;troughupdatefoodtypes();troughcalc()"></select></td>
+			<td><input ng-model="troughcreature.maturation" ng-change="troughcreature.foodnow=null;troughcalc()" ng-model-options="{debounce: 300}" percentage type="number" step="0.1"></td>
 			<td><input ng-model="troughcreature.quantity" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number"></td>
+			<td class="requirement"><input class="foodnow" ng-model="troughcreature.foodnow" ng-change="troughcalc()" ng-model-options="{debounce: 300}" type="number" min="0" placeholder="full"> / {{rowfoodcapacity(troughcreature) | number:0}}</td>
 			<td><input type="button" ng-click="troughremovecreature(index)" value="Remove"></td>
 		</tr>
 		<tr>
-			<td colspan="4" class="label tooltip" style="text-align: center; padding-top: 6px">Time went by<span class="tooltiptext">Fill in one baby's current maturation and press Apply: all rows grow by the same time and the food left is estimated. Undo puts it back.</span></td>
+			<td colspan="5" class="label tooltip" style="text-align: center; padding-top: 6px">Time went by<span class="tooltiptext">Fill in one baby's current maturation and press Apply: all rows grow by the same time and the food left is estimated. Undo puts it back.</span></td>
 		</tr>
 		<tr>
 			<td><select ng-options="creaturelist.indexOf(row) as elapsedlabel(row) for row in creaturelist" ng-model="elapsed.row"></select></td>
 			<td><input ng-model="elapsed.maturation" percentage type="number" step="0.1" placeholder="now %"></td>
+			<td></td>
 			<td><input type="button" ng-click="timewentby()" value="Apply"></td>
 			<td><input type="button" ng-click="timewentbyundo()" ng-disabled="!elapsed.undo" value="Undo"></td>
 		</tr>
 		<tr ng-show="elapsed.error">
-			<td colspan="4" style="color: #ff8a80">{{elapsed.error}}</td>
+			<td colspan="5" style="color: #ff8a80">{{elapsed.error}}</td>
 		</tr>
 		<tr ng-show="elapsed.done">
-			<td colspan="4">{{elapsed.done.seconds | secondsToDateTime}} went by: {{elapsed.done.eaten | number:0}} items eaten, {{elapsed.done.spoiled | number:0}} spoiled</td>
+			<td colspan="5">{{elapsed.done.seconds | secondsToDateTime}} went by: {{elapsed.done.eaten | number:0}} items eaten, {{elapsed.done.spoiled | number:0}} spoiled</td>
 		</tr>
 		<tr ng-repeat="starve in elapsed.done.starving">
-			<td colspan="4" style="color: #ff8a80">&#9888; By this estimate {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> had nothing to eat from {{starve.time | secondsToDateTime}} in - it got by some other way, so what is left is less certain</td>
+			<td colspan="5" style="color: #ff8a80">&#9888; By this estimate {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> had nothing to eat from {{starve.time | secondsToDateTime}} in - it got by some other way, so what is left is less certain</td>
 		</tr>
 	</table>
 	</div>
