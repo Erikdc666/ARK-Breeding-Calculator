@@ -3868,8 +3868,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	//Seconds from birth to adult at the current rates.
 	function maturationtime(name) {
 		var seconds=1/$scope.creatures[name].agespeed/$scope.creatures[name].agespeedmult/$scope.settings.maturationspeed;
-		if ($scope.settings.gen2hatcheffect === true) {
-			seconds/=1.5;
+		if ($scope.settings.gen2growtheffect === true) {
+			seconds/=2; //Baby Boon doubles growth, as in statscalc. This used to take the hatch effect and 1.5
 		}
 		return seconds;
 	}
