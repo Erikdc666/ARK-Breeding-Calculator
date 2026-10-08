@@ -3710,6 +3710,10 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	//become what should be left. An estimate: it assumes the babies started full, nobody
 	//hand-fed or topped up in between, and it squashes what is left of each food back into
 	//full stacks plus one partial with fresh spoil timers.
+	//The fields get the low end: someone near the babies the whole time. If they spent the
+	//time in stasis instead, items worth more than a baby can hold are not cut back to its
+	//cap, so a strong Maeguana can hold a lot more than that. Where the two ends are a stack
+	//or more apart, the result says so (elapsed.done.stasis) and asks for a recount.
 	$scope.elapsed={row: 0, maturation: null, done: null, error: '', undo: null};
 
 	$scope.elapsedlabel=function(row) {
@@ -3748,7 +3752,15 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 		for (var food in $scope.maeguana.stacks) {
 			$scope.maeguana.stacks[food]=result.remaining.maeguana[food] || 0;
 		}
-		$scope.elapsed.done={seconds: seconds, eaten: result.eatenfood, spoiled: result.spoiledfood, starving: result.starving};
+		var asleep=$scope.troughsim($scope.elapsed.undo.creaturelist, $scope.elapsed.undo.troughstacks, $scope.troughtypes[$scope.settings.troughtype], {points: $scope.maeguana.points, stacks: $scope.elapsed.undo.maeguanastacks}, {duration: seconds, stasis: true});
+		var stasis=[];
+		for (var food in result.remaining.maeguana) {
+			var most=asleep.remaining.maeguana[food] || 0;
+			if (most-result.remaining.maeguana[food]>=1) {
+				stasis.push({food: food, most: Math.round(most*10)/10});
+			}
+		}
+		$scope.elapsed.done={seconds: seconds, eaten: result.eatenfood, spoiled: result.spoiledfood, starving: result.starving, stasis: stasis};
 		$scope.elapsed.maturation=null;
 		$scope.troughcalc();
 	}
@@ -4001,8 +4013,15 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	//    trough is eaten first; the Maeguana only wins when its boosted item is still smaller
 	//  - it eats once it is missing at least one whole item, so bigger items just mean
 	//    bigger, rarer bites - the food value it gets is the boosted one. If one item is
-	//    worth more than the baby's whole cap, it eats under half full and the excess is
+	//    worth more than the baby's whole cap, it can eat under half full and the excess is
 	//    lost when the baby-age update clamps food back to the cap (every 4-64 s)
+	//  - it only looks for food now and then. After a look that found nothing it could eat,
+	//    the next one comes later the fuller it is, up to 10 minutes, but never later than
+	//    4.2 s before its Food runs out. So on those oversized items it does not eat at half
+	//    full but close to empty, and one item carries it for about a whole cap
+	//  - all of that is for a baby someone is near. One that was in stasis settles up when it
+	//    wakes: the Food it burned comes off its own Food first and the rest is paid in items,
+	//    each counting for its full boosted value - nothing is lost to the cap (2026-10-08)
 	//The Maeguana's own eating from its inventory is not modelled (an adult on 0.01/s, well
 	//under one raw meat an hour).
 	var foodpriority={'Raw Meat': 3, 'Raw Fish Meat': 3};
@@ -4035,6 +4054,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 	//opts.duration: run for exactly this many seconds, whatever happens to the food, and
 	//report what is left (output.remaining) - for "time went by". Nobody starves in this
 	//mode; output.starving lists who ran out of food and when.
+	//opts.stasis: nobody was near the babies, so oversized Maeguana items count in full
+	//(see above). Everything else assumes someone is near the whole time, which costs the
+	//most food.
 	$scope.troughsim=function(creaturelist, troughstacks, troughmultiplier, maeguana, opts) {
 		opts=opts || {};
 		//All locals. They used to be implicit globals, which made the per-second loop below
@@ -4156,6 +4178,8 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 				}
 				newcreature.troughfrom=(0.1-newcreature.maturation)*newcreature.maturationtime;
 				newcreature.snapwait=0;
+				newcreature.nextlook=0; //When it next looks for food, while on oversized items
+				newcreature.backoff=0;
 				newcreature.foods=$scope.foodlists[$scope.creatures[name].type];
 				newcreature.foodmultipliers=$scope.creatures[name].foodmultipliers;
 				newcreature.wastemultipliers=$scope.creatures[name].wastemultipliers;
@@ -4304,10 +4328,22 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 					var gain=stacks[currentstack]['food']*foodmult;
 					var overflow=0;
 					var fits=gain<=simcreature.hunger;
-					if (!fits) {
-						if (gain>cap && simcreature.hunger>0.5*cap) {
+					if (!fits && gain>cap && opts.stasis) {
+						fits=simcreature.hunger>0.5*cap; //Settled on waking, in full: see below
+					} else if (!fits && gain>cap && simcreature.hunger>2 && time>=simcreature.nextlook) {
+						//A look for food. Under half full it eats; otherwise it backs off: the
+						//wait runs from 1.4 s to 10 minutes with how full it is (times a factor
+						//that starts at 1 and grows 0.1 per failed look), but ends 4.2 s before
+						//its Food would hit 0.
+						if (simcreature.hunger>0.5*cap) {
 							fits=true;
 							overflow=gain-simcreature.hunger;
+							simcreature.backoff=0;
+						} else {
+							simcreature.backoff=simcreature.backoff>0 ? simcreature.backoff+0.1 : 1;
+							var left=cap-simcreature.hunger;
+							var wait=Math.min(left/simcreature.foodrate-4.2, 1.4+(600-1.4)*Math.min(left/cap*simcreature.backoff, 1));
+							simcreature.nextlook=time+Math.max(wait, 1.4);
 						}
 					}
 					if (fits) {
@@ -4352,6 +4388,9 @@ var breedingController=angular.module('breedingControllers', []).controller('bre
 						eatenpoints+=gain*taken;
 						wastedpoints+=waste*wastemult*taken;
 						simcreature.hunger-=gain-overflow;
+						if (simcreature.hunger<0) {
+							reserves++; //Stasis: the whole item counts, it lives off the rest
+						}
 						if (overflow>0) {
 							//Until the baby-age update cuts it back (4 s + 0-60 s random) it sits
 							//above its cap and is not hungry. Count only the 4 s minimum: the roll

@@ -86,6 +86,9 @@
 		<tr ng-show="elapsed.done">
 			<td colspan="5">{{elapsed.done.seconds | secondsToDateTime}} went by: {{elapsed.done.eaten | number:0}} items eaten, {{elapsed.done.spoiled | number:0}} spoiled</td>
 		</tr>
+		<tr ng-show="elapsed.done.stasis.length">
+			<td colspan="5" style="color: #ffd180">The Maeguana may hold more than this: filled in is the least, with someone near the babies all that time. For as long as they were in stasis nothing was wasted, up to <span ng-repeat="s in elapsed.done.stasis">{{s.most | number:1}} stacks of {{s.food}}{{$last ? '' : ', '}}</span>. Check the Maeguana in game, restack its inventory and fill in what it really holds.</td>
+		</tr>
 		<tr ng-repeat="starve in elapsed.done.starving">
 			<td colspan="5" style="color: #ff8a80">&#9888; By this estimate {{starve.name}}<span ng-show="starve.count>1"> &times;{{starve.count}}</span> had nothing to eat from {{starve.time | secondsToDateTime}} in - it got by some other way, so what is left is less certain</td>
 		</tr>

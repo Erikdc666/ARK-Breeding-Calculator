@@ -5,7 +5,7 @@
 			$locationProvider.html5Mode(true);
 
 			$routeProvider.when('/', {
-				templateUrl: 'breeding.html?d=20261008.5', controller: 'breedingController'
+				templateUrl: 'breeding.html?d=20261008.6', controller: 'breedingController'
 			}).
 			otherwise({
 				redirectTo: '/'
